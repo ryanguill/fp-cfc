@@ -1,14 +1,14 @@
 
-#FPUtil
+# FPUtil
 
 ## Dependencies
 
 
-##Support
+## Support
 Adobe ColdFusion 10+, Lucee 4.5+
 
 
-##Todo:
+## Todo:
 
 
 ## How to run the tests
@@ -30,7 +30,6 @@ You could swap out the `app` service with lucee or other coldfusion version if y
 
 This software is licensed under the Apache 2 license, quoted below.
 
-Copyright 2016 MotorsportReg
 Copyright 2016 Ryan Guill <ryanguill@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
