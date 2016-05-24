@@ -1,0 +1,11 @@
+app:
+  #image: finalcut/coldfusion10
+  image: pukkasoftware/coldfusion:10u18
+  ports:
+    - "80:8500"
+  volumes:
+   - .:/var/www
+  volumes_from:
+   - testbox
+testbox:
+  image: ryanguill/testbox:latest
