@@ -233,8 +233,6 @@ component extends="testbox.system.BaseSpec" {
 			it("map takes objects", function() {
 				var mock = new mockObject();
 
-				writedump(fp.map(function(){}, mock));
-
 				expect(fp.map(function(){}, mock)).toBe("I am map!");
 
 
