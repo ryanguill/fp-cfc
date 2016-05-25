@@ -749,6 +749,7 @@ component {
 	}
 
 	function _listHead (required string data, string delimiter = ",", boolean includeEmptyFields = false) {
+		//listFirst doesnt support includeEmptyFields
 		return _arrayHead(listToArray(data, delimiter, includeEmptyFields));
 	}
 
@@ -775,5 +776,13 @@ component {
 	//last
 
 	//nth
+
+	//NOTE! the value passed to defaultValue will be evaluated, even if the default is not used!
+	function defaults (any value, any defaultValue) {
+		if (isNull(value)) {
+			return defaultValue;
+		}
+		return value;
+	}
 
 }

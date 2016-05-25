@@ -16,6 +16,11 @@ component extends="testbox.system.BaseSpec" {
 
 	function run () {
 
+		var qNoRows = queryNew("a,b", "integer,varchar");
+		var qOneRow = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]);
+		var qTwoRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}]);
+		var qThreeRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
+
 		describe("baseline environment", function () {
 
 			it("should have created the fp object", function() {
@@ -119,19 +124,18 @@ component extends="testbox.system.BaseSpec" {
 			});
 
 			it("provides _queryMap", function() {
-				var data = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}]);
 				var double = function (row) {
 					row.a *= 2;
 					row.b = row.b & row.b;
 					return row;
 				};
-				var result = fp._queryMap(data, double);
+				var result = fp._queryMap(qTwoRows, double);
 
 				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:2, b:"foofoo"}, {a:4, b:"barbar"}]));
 
-				result = fp._queryMap(queryNew("a,b", "integer,varchar"), double);
+				result = fp._queryMap(qNoRows, double);
 
-				expect(result).toBe(queryNew("a,b", "integer,varchar"), "empty in, empty out");
+				expect(result).toBe(qNoRows, "empty in, empty out");
 
 				var argCheck = function(row, index, wholeQuery) {
 					expect(row).toBeStruct();
@@ -141,25 +145,24 @@ component extends="testbox.system.BaseSpec" {
 					return row;
 				};
 
-				result = fp._queryMap(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]), argCheck);
+				result = fp._queryMap(qOneRow, argCheck);
 
 				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
 			});
 
 			it("provides queryMap through map", function() {
-				var data = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}]);
 				var double = function (row) {
 					row.a *= 2;
 					row.b = row.b & row.b;
 					return row;
 				};
-				var result = fp.map(double, data);
+				var result = fp.map(double, qTwoRows);
 
 				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:2, b:"foofoo"}, {a:4, b:"barbar"}]));
 
-				result = fp.map(double, queryNew("a,b", "integer,varchar"));
+				result = fp.map(double, qNoRows);
 
-				expect(result).toBe(queryNew("a,b", "integer,varchar"), "empty in, empty out");
+				expect(result).toBe(qNoRows, "empty in, empty out");
 
 				var argCheck = function(row, index, wholeQuery) {
 					expect(row).toBeStruct();
@@ -169,7 +172,7 @@ component extends="testbox.system.BaseSpec" {
 					return row;
 				};
 
-				result = fp.map(argCheck, queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
+				result = fp.map(argCheck, qOneRow);
 
 				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
 			});
@@ -362,20 +365,16 @@ component extends="testbox.system.BaseSpec" {
 			});
 
 			it("provides _queryEach", function() {
-				var threeRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
-				var oneRow = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]);
-				var noRows = queryNew("a,b", "integer,varchar");
-
 				var loopCounter = 0;
 				var f = function(x) {
 					loopCounter++;
 				};
-				fp._queryEach(threeRows, f);
+				fp._queryEach(qThreeRows, f);
 				expect(loopCounter).toBe(3);
 
 				//empty check
 				loopCounter = 0;
-				fp._queryEach(noRows, f);
+				fp._queryEach(qNoRows, f);
 				expect(loopCounter).toBe(0);
 
 				//arg check
@@ -388,27 +387,23 @@ component extends="testbox.system.BaseSpec" {
 					loopCounter++;
 				};
 
-				result = fp._queryEach(oneRow, argCheck);
+				result = fp._queryEach(qOneRow, argCheck);
 
 				expect(isNull(result)).toBeTrue();
 				expect(loopCounter).toBe(1);
 			});
 
 			it("provides queryEach through each", function() {
-				var threeRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
-				var oneRow = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]);
-				var noRows = queryNew("a,b", "integer,varchar");
-
 				var loopCounter = 0;
 				var f = function(x) {
 					loopCounter++;
 				};
-				fp.each(f, threeRows);
+				fp.each(f, qThreeRows);
 				expect(loopCounter).toBe(3);
 
 				//empty check
 				loopCounter = 0;
-				fp.each(f, noRows);
+				fp.each(f, qNoRows);
 				expect(loopCounter).toBe(0);
 
 				//arg check
@@ -421,7 +416,7 @@ component extends="testbox.system.BaseSpec" {
 					loopCounter++;
 				};
 
-				result = fp.each(argCheck, oneRow);
+				result = fp.each(argCheck, qOneRow);
 
 				expect(isNull(result)).toBeTrue();
 				expect(loopCounter).toBe(1);
@@ -485,7 +480,7 @@ component extends="testbox.system.BaseSpec" {
 
 			});
 			
-			it("provies a curried version of each", function() {
+			it("provides a curried version of each", function() {
 				var loopCounter = 0;
 				var f = function(x) {
 					loopCounter++;
@@ -511,7 +506,156 @@ component extends="testbox.system.BaseSpec" {
 				}).toThrow("", "this object does not provide an `each` method");
 			});
 
-		});
+		});//each
+
+		describe("FILTER", function() {});//filter
+
+		describe("FILTER", function() {});//filter
+
+		describe("SOME", function() {});//some
+
+		describe("EVERY", function() {});//every
+
+		describe("FIND", function() {});//find
+
+		describe("FINDINDEX", function() {});//findindex
+
+		describe("REDUCE", function() {});//reduce
+
+		describe("REDUCERIGHT", function() {});//reduceright
+
+		describe("MISC", function() {
+
+			it("provides _arrayHead", function() {
+				var data = [1,2,3];
+				var head = fp._arrayHead(data);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(1);
+
+				head = fp._arrayHead([]);
+				expect(isNull(head)).toBeTrue();
+
+				head = fp.defaults(fp._arrayHead([]), 0);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(0);
+			});
+
+			it("provides _queryHead", function() {
+				var head = fp._queryHead(qThreeRows);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe({a:1, b:"foo"});
+
+				head = fp._queryHead(qNoRows);
+				expect(isNull(head)).toBeTrue();
+
+				head = fp.defaults(fp._queryHead(qNoRows), 0);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(0);
+			});
+
+			it("provides _listHead", function() {
+				var data = "1,2,3";
+				var head = fp._listHead(data);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(1);
+
+				head = fp._listHead("");
+				expect(isNull(head)).toBeTrue();
+
+				head = fp.defaults(fp._listHead(""), 0);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(0);
+			});
+
+			it("provides arrayHead through head", function() {
+				var data = [1,2,3];
+				var head = fp.head(data);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(1);
+
+				head = fp.head([]);
+				expect(isNull(head)).toBeTrue();
+
+				head = fp.defaults(fp.head([]), 0);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(0);
+			});
+
+			it("provides queryHead through head", function() {
+				var head = fp.head(qThreeRows);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe({a:1, b:"foo"});
+
+				head = fp.head(qNoRows);
+				expect(isNull(head)).toBeTrue();
+
+				head = fp.defaults(fp.head(qNoRows), 0);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(0);
+			});
+
+			it("provides listHead through head", function() {
+				var data = "1,2,3";
+				var head = fp.head(data);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(1);
+
+				head = fp.head("");
+				expect(isNull(head)).toBeTrue();
+
+				head = fp.defaults(fp.head(""), 0);
+				expect(isNull(head)).toBeFalse();
+				expect(head).toBe(0);
+			});
+
+			it("provides defaults()", function() {
+				var f = function() {
+					//no return;
+				};
+				expect(fp.defaults(javacast("null", 0), 0)).toBe(0);
+				expect(fp.defaults(f(), 0)).toBe(0);
+				expect(fp.defaults(1, 0)).toBe(1);
+			});
+
+			it("provides times", function() {
+				var loopCount = 0;
+				var sum = 0;
+				var f = function(x) {
+					loopCount++;
+					sum += x;
+				};
+
+				fp.times(f, 5);
+
+				expect(loopCount).toBe(5);
+				expect(sum).toBe(15);
+
+				loopCount = sum = 0;
+
+				var t = fp.times(f);
+				t(3);
+
+				expect(loopCount).toBe(3);
+				expect(sum).toBe(6);
+			});
+
+			it("provides queryToStruct", function() {
+				var x = fp.queryToStruct("a", qThreeRows);
+				expect(x).toBeStruct().toHaveLength(3);
+				expect(x["1"]).toBeStruct().toHaveLength(2).toBe({a:1, b:"foo"});
+				expect(x["2"]).toBeStruct().toHaveLength(2).toBe({a:2, b:"bar"});
+				expect(x["3"]).toBeStruct().toHaveLength(2).toBe({a:3, b:"baz"});
+
+				x = fp.queryToStruct("b", qThreeRows);
+				expect(x).toBeStruct().toHaveLength(3);
+				expect(x["foo"]).toBeStruct().toHaveLength(2).toBe({a:1, b:"foo"});
+				expect(x["bar"]).toBeStruct().toHaveLength(2).toBe({a:2, b:"bar"});
+				expect(x["baz"]).toBeStruct().toHaveLength(2).toBe({a:3, b:"baz"});
+			});
+
+		});//misc
+
+
 	}
 
 
