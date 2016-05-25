@@ -508,9 +508,73 @@ component extends="testbox.system.BaseSpec" {
 
 		});//each
 
-		describe("FILTER", function() {});//filter
+		describe("FILTER", function() {
 
-		describe("FILTER", function() {});//filter
+			it("provides _arrayFilter", function() {
+				var data = [1,2,3,4,5,6,7,8,9,10];
+				var isOdd = function(x) {
+					return x MOD 2 != 0;
+				};
+				expect(fp._arrayFilter(data, isOdd)).toBe([1,3,5,7,9]);
+
+				expect(fp._arrayFilter([], isOdd)).toBeArray().toHaveLength(0);
+
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._arrayFilter(["a"], argCheck)).toBeArray().toHaveLength(1);
+			});
+
+			it("provides arrayFilter as filter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides _structFilter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides structFilter as filter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides _queryFilterToArray", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides _queryFilter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides queryFilter as filter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides _listFilter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("provides listFilter as filter", function() {
+				throw("NotYetImplemented");
+			});
+			
+			it("provides a curried version of filter", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("filter takes objects", function() {
+				throw("NotYetImplemented");
+			});
+
+			it("filter throws appropriate errors", function() {
+				throw("NotYetImplemented");
+			});
+
+
+		});//filter
 
 		describe("SOME", function() {});//some
 
