@@ -1,0 +1,3 @@
+component {
+	//intentionally no method
+}

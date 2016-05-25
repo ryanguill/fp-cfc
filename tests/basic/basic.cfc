@@ -225,21 +225,295 @@ component extends="testbox.system.BaseSpec" {
 				var double = function (x) { return x * 2; };
 				var mapDouble = fp.map(double);
 
-				expect(fp.canBeCalledAsFunction(mapDouble)).toBeTrue();
+				expect(fp.isCallable(mapDouble)).toBeTrue();
 
 				expect(mapDouble([1,2,3])).toBe([2,4,6]);
 			});
 
 			it("map takes objects", function() {
-				var mock = new mockObject();
+				var mock = new tests.com.mockObject();
 
 				expect(fp.map(function(){}, mock)).toBe("I am map!");
+			});
 
+			it("map throws appropriate errors", function() {
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.map(function(){}, mock);
+				}).toThrow("", "this object does not provide a `map` method");
+			});
 
+		});
+
+		describe("EACH", function() {
+
+			it("provides _arrayEach", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp._arrayEach([1,2,3], f);
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp._arrayEach([], f);
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					loopCounter++;
+				};
+
+				result = fp._arrayEach(["a"], argCheck);
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+
+			});
+
+			it("provides arrayEach through each", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp.each(f, [1,2,3]);
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp.each(f, []);
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					loopCounter++;
+				};
+
+				result = fp.each(argCheck, ["a"]);
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+
+			});
+
+			it("provides _structEach", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp._structEach({a:1, b:2, c:3}, f);
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp._structEach({}, f);
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					loopCounter++;
+				};
+
+				result = fp._structEach({a:1}, argCheck);
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+			});
+
+			it("provides structEach through each", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp.each(f, {a:1, b:2, c:3});
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp.each(f, {});
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					loopCounter++;
+				};
+
+				result = fp.each(argCheck, {a:1});
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+			});
+
+			it("provides _queryEach", function() {
+				var threeRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
+				var oneRow = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]);
+				var noRows = queryNew("a,b", "integer,varchar");
+
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp._queryEach(threeRows, f);
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp._queryEach(noRows, f);
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					loopCounter++;
+				};
+
+				result = fp._queryEach(oneRow, argCheck);
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+			});
+
+			it("provides queryEach through each", function() {
+				var threeRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
+				var oneRow = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]);
+				var noRows = queryNew("a,b", "integer,varchar");
+
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp.each(f, threeRows);
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp.each(f, noRows);
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					loopCounter++;
+				};
+
+				result = fp.each(argCheck, oneRow);
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+			});
+
+			it("provides _listEach", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp._listEach("1,2,3", f);
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp._listEach("", f);
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					loopCounter++;
+				};
+
+				result = fp._listEach("a", argCheck);
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+
+			});
+
+			it("provides listEach through each", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				fp.each(f, "1,2,3");
+				expect(loopCounter).toBe(3);
+
+				//empty check
+				loopCounter = 0;
+				fp.each(f, "");
+				expect(loopCounter).toBe(0);
+
+				//arg check
+				loopCounter = 0;
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					loopCounter++;
+				};
+
+				result = fp.each(argCheck, "a");
+
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(1);
+
+			});
+			
+			it("provies a curried version of each", function() {
+				var loopCounter = 0;
+				var f = function(x) {
+					loopCounter++;
+				};
+				var eachf = fp.each(f);
+				expect(fp.isCallable(eachf)).toBeTrue();
+
+				var result = eachf([1,2,3]);
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(3);
+			});
+
+			it("each takes objects", function() {
+				var mock = new tests.com.mockObject();
+
+				expect(fp.each(function(){}, mock)).toBe("I am each!");
+			});
+
+			it("each throws appropriate errors", function() {
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.each(function(){}, mock);
+				}).toThrow("", "this object does not provide an `each` method");
 			});
 
 		});
 	}
+
 
 
 }

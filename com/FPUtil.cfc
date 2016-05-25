@@ -705,7 +705,7 @@ component {
 	MISC
 	========================================================*/
 
-	function canBeCalledAsFunction (f) {
+	function isCallable (f) {
 		return isCustomFunction(f) || isClosure(f);
 	}
 
