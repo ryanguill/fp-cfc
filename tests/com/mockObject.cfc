@@ -5,4 +5,7 @@ component {
 	function each () {
 		return "I am each!";
 	}
+	function filter () {
+		return "I am filter!";
+	}
 }

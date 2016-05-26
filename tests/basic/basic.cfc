@@ -530,47 +530,177 @@ component extends="testbox.system.BaseSpec" {
 			});
 
 			it("provides arrayFilter as filter", function() {
-				throw("NotYetImplemented");
+				var data = [1,2,3,4,5,6,7,8,9,10];
+				var isOdd = function(x) {
+					return x MOD 2 != 0;
+				};
+				expect(fp.filter(isOdd, data)).toBe([1,3,5,7,9]);
+
+				expect(fp.filter(isOdd, [])).toBeArray().toHaveLength(0);
+
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.filter(argCheck, ["a"])).toBeArray().toHaveLength(1);
 			});
 
 			it("provides _structFilter", function() {
-				throw("NotYetImplemented");
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var isOdd = function (k, v) { return v MOD 2 == 1; };
+				var result = fp._structFilter(data, isOdd);
+
+				expect(result).toBe({a:1, c:3, e:5});
+
+				result = fp._structFilter({}, isOdd);
+
+				expect(result).toBe({}, "empty in, empty out");
+
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				result = fp._structFilter({a:1}, argCheck);
+
+				expect(result).toBe({a:1});
 			});
 
 			it("provides structFilter as filter", function() {
-				throw("NotYetImplemented");
-			});
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var isOdd = function (k, v) { return v MOD 2 == 1; };
+				var result = fp.filter(isOdd, data);
 
-			it("provides _queryFilterToArray", function() {
-				throw("NotYetImplemented");
+				expect(result).toBe({a:1, c:3, e:5});
+
+				result = fp.filter(isOdd, {});
+
+				expect(result).toBe({}, "empty in, empty out");
+
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				result = fp.filter(argCheck, {a:1});
+
+				expect(result).toBe({a:1});
 			});
 
 			it("provides _queryFilter", function() {
-				throw("NotYetImplemented");
+				var isOdd = function (row) {
+					return row.a MOD 2 == 1;
+				};
+				var result = fp._queryFilter(qTwoRows, isOdd);
+
+				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
+
+				result = fp._queryFilter(qNoRows, isOdd);
+
+				expect(result).toBe(qNoRows, "empty in, empty out");
+
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				result = fp._queryFilter(qOneRow, argCheck);
+
+				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
 			});
 
 			it("provides queryFilter as filter", function() {
-				throw("NotYetImplemented");
+				var isOdd = function (row) {
+					return row.a MOD 2 == 1;
+				};
+				var result = fp.filter(isOdd, qTwoRows);
+
+				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
+
+				result = fp.filter(isOdd, qNoRows);
+
+				expect(result).toBe(qNoRows, "empty in, empty out");
+
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				result = fp.filter(argCheck, qOneRow);
+
+				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));
 			});
 
 			it("provides _listFilter", function() {
-				throw("NotYetImplemented");
+				var data = "1,2,3,4,5,6,7,8,9,10";
+				var isOdd = function(x) {
+					return x MOD 2 != 0;
+				};
+				expect(fp._listFilter(data, isOdd)).toBe("1,3,5,7,9");
+
+				expect(fp._listFilter("", isOdd)).toBeString().toHaveLength(0);
+
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._listFilter("a", argCheck)).toBeString().toHaveLength(1);
 			});
 
 			it("provides listFilter as filter", function() {
-				throw("NotYetImplemented");
+				var data = "1,2,3,4,5,6,7,8,9,10";
+				var isOdd = function(x) {
+					return x MOD 2 != 0;
+				};
+				expect(fp.filter(isOdd, data)).toBe("1,3,5,7,9");
+
+				expect(fp.filter(isOdd, "")).toBeString().toHaveLength(0);
+
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.filter(argCheck, "a")).toBeString().toHaveLength(1);
 			});
 			
 			it("provides a curried version of filter", function() {
-				throw("NotYetImplemented");
+				var isOdd = function (x) { return x MOD 2 != 0;};
+				var filterOdd = fp.filter(isOdd);
+
+				expect(fp.isCallable(filterOdd)).toBeTrue();
+				expect(filterOdd([1,2,3,4,5])).toBe([1,3,5]);
 			});
 
 			it("filter takes objects", function() {
-				throw("NotYetImplemented");
+				var mock = new tests.com.mockObject();
+
+				expect(fp.filter(function(){}, mock)).toBe("I am filter!");
 			});
 
 			it("filter throws appropriate errors", function() {
-				throw("NotYetImplemented");
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.filter(function(){}, mock);
+				}).toThrow("", "this object does not provide a `filter` method");
 			});
 
 
