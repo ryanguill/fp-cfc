@@ -339,7 +339,7 @@ component {
 				if (structKeyExists(data, "every")) {
 					return data.every(f);
 				} else {
-					throw("this object does not provide a `every` method");
+					throw("this object does not provide an `every` method");
 				}
 			} else if (isStruct(data)) {
 				return _structEvery(data, f);
@@ -783,6 +783,14 @@ component {
 			return defaultValue;
 		}
 		return value;
+	}
+
+	function identity (x) {
+		return x;
+	}
+
+	function noOp () {
+
 	}
 
 }
