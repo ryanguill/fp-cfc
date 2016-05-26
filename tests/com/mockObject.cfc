@@ -11,4 +11,7 @@ component {
 	function some () {
 		return "I am some!";
 	}
+	function every () {
+		return "I am every!";
+	}
 }

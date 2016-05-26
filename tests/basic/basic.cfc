@@ -1059,47 +1059,339 @@ component extends="testbox.system.BaseSpec" {
 		describe("EVERY", function() {
 
 			it("provides _arrayEvery", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = [1,2,3,4,5];
+				var willPass = function(x) {
+					loopCounter++;
+					return x < 10;
+				};
+				var willFail = function(x) {
+					loopCounter++;
+					return x < 0;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp._arrayEvery(data, willPass);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
+
+				var loopCounter = 0;
+				var didFail = fp._arrayEvery(data, willFail);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(1);
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp._arrayEvery([], fp.noOp);
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._arrayEvery(["a"], argCheck)).toBeBoolean().toBeTrue();
 			});
 
 			it("provides arrayEvery as every", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = [1,2,3,4,5];
+				var willPass = function(x) {
+					loopCounter++;
+					return x < 10;
+				};
+				var willFail = function(x) {
+					loopCounter++;
+					return x < 0;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp.every(willPass, data);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
+
+				var loopCounter = 0;
+				var didFail = fp.every(willFail, data);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(1);
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp.every(fp.noOp, []);
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.every(argCheck, ["a"])).toBeBoolean().toBeTrue();
 			});
 
 			it("provides _structEvery", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var willPass = function(k, v) {
+					loopCounter++;
+					return v < 10;
+				};
+				var willFail = function(k, v) {
+					loopCounter++;
+					return v < 0;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp._structEvery(data, willPass);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				var loopCounter = 0;
+				var didFail = fp._structEvery(data, willFail);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp._structEvery({}, fp.noOp);
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp._structEvery({a:1}, argCheck)).toBeBoolean().toBeTrue();
 			});
 
 			it("provides structEvery as every", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var willPass = function(k, v) {
+					loopCounter++;
+					return v < 10;
+				};
+				var willFail = function(k, v) {
+					loopCounter++;
+					return v < 0;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp.every(willPass, data);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				var loopCounter = 0;
+				var didFail = fp.every(willFail, data);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp.every(fp.noOp, {});
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp.every(argCheck, {a:1})).toBeBoolean().toBeTrue();
 			});
 
 			it("provides _queryEvery", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var willPass = function(row) {
+					loopCounter++;
+					return row.a < 10;
+				};
+				var willFail = function(row) {
+					loopCounter++;
+					return row.a < 0;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp._queryEvery(qFiveRows, willPass);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
+
+				var loopCounter = 0;
+				var didFail = fp._queryEvery(qFiveRows, willFail);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(1);
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp._queryEvery(qNoRows, fp.noOp);
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp._queryEvery(qOneRow, argCheck)).toBeBoolean().toBeTrue();
 			});
 
 			it("provides queryEvery as every", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var willPass = function(row) {
+					loopCounter++;
+					return row.a < 10;
+				};
+				var willFail = function(row) {
+					loopCounter++;
+					return row.a < 0;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp.every(willPass, qFiveRows);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
+
+				var loopCounter = 0;
+				var didFail = fp.every(willFail, qFiveRows);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(1);
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp.every(fp.noOp, qNoRows);
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp.every(argCheck, qOneRow)).toBeBoolean().toBeTrue();
 			});
 
 			it("provides _listEvery", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = "1,2,3,4,5";
+				var willPass = function(x) {
+					loopCounter++;
+					return x < 10;
+				};
+				var willFail = function(x) {
+					loopCounter++;
+					return x < 1;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp._listEvery(data, willPass);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
+
+				var loopCounter = 0;
+				var didFail = fp._listEvery(data, willFail);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(1);
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp._listEvery("", fp.noOp);
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._listEvery("a", argCheck)).toBeBoolean().toBeTrue();
 			});
 
 			it("provides listEvery as every", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = "1,2,3,4,5";
+				var willPass = function(x) {
+					loopCounter++;
+					return x < 10;
+				};
+				var willFail = function(x) {
+					loopCounter++;
+					return x < 1;
+				};
+
+				var loopCounter = 0;
+				var didPass = fp.every(willPass, data);
+				expect(didPass).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
+
+				var loopCounter = 0;
+				var didFail = fp.every(willFail, data);
+				expect(didFail).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(1);
+
+				//empty
+				var loopCounter = 0;
+				var emptyCollectionResult = fp.every(fp.noOp, "");
+				expect(emptyCollectionResult).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.every(argCheck, "a")).toBeBoolean().toBeTrue();
 			});
 
 			it("provides a curried version of every", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var willPass = function(x) {
+					loopCounter++;
+					return x < 10;
+				};
+				var doesAllPass = fp.every(willPass);
+				expect(fp.isCallable(doesAllPass)).toBeTrue();
+				expect(doesAllPass([1,2,3,4,5])).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(5);
 			});
 
 			it("every takes objects", function() {
-				fail("NotYetImplemented");
+				var mock = new tests.com.mockObject();
+				expect(fp.every(function(){}, mock)).toBe("I am every!");
 			});
 
 			it("every throws appropriate errors", function() {
-				fail("NotYetImplemented");
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.every(function(){}, mock);
+				}).toThrow("", "this object does not provide an `every` method");
 			});
 
 		});//every
