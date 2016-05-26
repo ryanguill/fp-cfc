@@ -8,4 +8,7 @@ component {
 	function filter () {
 		return "I am filter!";
 	}
+	function some () {
+		return "I am some!";
+	}
 }

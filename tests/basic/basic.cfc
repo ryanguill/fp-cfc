@@ -17,9 +17,19 @@ component extends="testbox.system.BaseSpec" {
 	function run () {
 
 		var qNoRows = queryNew("a,b", "integer,varchar");
-		var qOneRow = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]);
-		var qTwoRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}]);
-		var qThreeRows = queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
+		var qOneRow = queryNew("a,b", "integer,varchar",
+				[{a:1, b:"foo"}]);
+		var qTwoRows = queryNew("a,b", "integer,varchar",
+				[{a:1, b:"foo"}, {a:2, b:"bar"}]);
+		var qThreeRows = queryNew("a,b", "integer,varchar",
+				[{a:1, b:"foo"}, {a:2, b:"bar"}, {a:3, b:"baz"}]);
+		var qFiveRows = queryNew("a,b", "integer,varchar",[
+				{a:1, b:"foo"},
+				{a:2, b:"bar"},
+				{a:3, b:"baz"},
+				{a:4, b:"lorem"},
+				{a:5, b:"ipsum"}
+				]);
 
 		describe("baseline environment", function () {
 
@@ -706,17 +716,585 @@ component extends="testbox.system.BaseSpec" {
 
 		});//filter
 
-		describe("SOME", function() {});//some
+		describe("SOME", function() {
 
-		describe("EVERY", function() {});//every
+			it("provides _arraySome", function() {
+				var loopCounter = 0;
+				var data = [1,2,3,4,5];
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
 
-		describe("FIND", function() {});//find
+				var loopCounter = 0;
+				var hasThree = fp._arraySome(data, isThree);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
 
-		describe("FINDINDEX", function() {});//findindex
+				var loopCounter = 0;
+				var hasSix = fp._arraySome(data, isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(5);
 
-		describe("REDUCE", function() {});//reduce
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp._arraySome([], isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
 
-		describe("REDUCERIGHT", function() {});//reduceright
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._arraySome(["a"], argCheck)).toBeBoolean().toBeTrue();
+			});
+
+			it("provides arraySome as some", function() {
+				var loopCounter = 0;
+				var data = [1,2,3,4,5];
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp.some(isThree, data);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, data);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, []);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.some(argCheck, ["a"])).toBeBoolean().toBeTrue();
+			});
+
+			it("provides _structSome", function() {
+				var loopCounter = 0;
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var isThree = function(k, v) {
+					loopCounter++;
+					return v == 3;
+				};
+				var isSix = function(k, v) {
+					loopCounter++;
+					return v == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp._structSome(data, isThree);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				var loopCounter = 0;
+				var hasSix = fp._structSome(data, isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp._structSome({}, isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp._structSome({a:1}, argCheck)).toBeBoolean().toBeTrue();
+			});
+
+			it("provides structSome as some", function() {
+				var loopCounter = 0;
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var isThree = function(k, v) {
+					loopCounter++;
+					return v == 3;
+				};
+				var isSix = function(k, v) {
+					loopCounter++;
+					return v == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp.some(isThree, data);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, data);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, {});
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp.some(argCheck, {a:1})).toBeBoolean().toBeTrue();
+			});
+
+			it("provides _querySome", function() {
+				var loopCounter = 0;
+				var isThree = function(row) {
+					loopCounter++;
+					return row.a == 3;
+				};
+				var isSix = function(row) {
+					loopCounter++;
+					return row.a == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp._querySome(qFiveRows, isThree);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var hasSix = fp._querySome(qFiveRows, isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp._querySome(qNoRows, isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp._querySome(qOneRow, argCheck)).toBeBoolean().toBeTrue();
+			});
+
+			it("provides querySome as some", function() {
+				var loopCounter = 0;
+				var isThree = function(row) {
+					loopCounter++;
+					return row.a == 3;
+				};
+				var isSix = function(row) {
+					loopCounter++;
+					return row.a == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp.some(isThree, qFiveRows);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, qFiveRows);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, qNoRows);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp.some(argCheck, qOneRow)).toBeBoolean().toBeTrue();
+			});
+
+			it("provides _listSome", function() {
+				var loopCounter = 0;
+				var data = "1,2,3,4,5";
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp._listSome(data, isThree);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var hasSix = fp._listSome(data, isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp._listSome("", isSix);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._listSome("a", argCheck)).toBeBoolean().toBeTrue();
+			});
+
+			it("provides listSome as some", function() {
+				var loopCounter = 0;
+				var data = "1,2,3,4,5";
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var hasThree = fp.some(isThree, data);
+				expect(hasThree).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, data);
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var hasSix = fp.some(isSix, "");
+				expect(hasSix).toBeBoolean().toBeFalse();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.some(argCheck, "a")).toBeBoolean().toBeTrue();
+			});
+
+			it("provides a curried version of some", function() {
+				var loopCounter = 0;
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var hasThree = fp.some(isThree);
+				expect(fp.isCallable(hasThree)).toBeTrue();
+				expect(hasThree([1,2,3,4,5])).toBeBoolean().toBeTrue();
+				expect(loopCounter).toBe(3);
+			});
+
+			it("some takes objects", function() {
+				var mock = new tests.com.mockObject();
+				expect(fp.some(function(){}, mock)).toBe("I am some!");
+			});
+
+			it("some throws appropriate errors", function() {
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.some(function(){}, mock);
+				}).toThrow("", "this object does not provide a `some` method");
+			});
+
+		});//some
+
+		describe("EVERY", function() {
+
+			it("provides _arrayEvery", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides arrayEvery as every", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _structEvery", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides structEvery as every", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _queryEvery", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides queryEvery as every", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _listEvery", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides listEvery as every", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides a curried version of every", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("every takes objects", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("every throws appropriate errors", function() {
+				fail("NotYetImplemented");
+			});
+
+		});//every
+
+		describe("FIND", function() {
+
+			it("provides _arrayFind", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides arrayFind as find", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _structFind", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides structFind as find", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _queryFind", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides queryFind as find", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _listFind", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides listFind as find", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides a curried version of find", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("find takes objects", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("find throws appropriate errors", function() {
+				fail("NotYetImplemented");
+			});
+
+		});//find
+
+		describe("FINDINDEX", function() {
+
+			it("provides _arrayFindIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides arrayFindIndex as findIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _structFindIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides structFindIndex as findIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _queryFindIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides queryFindIndex as findIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _listFindIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides listFindIndex as findIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides a curried version of findIndex", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("findIndex takes objects", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("findIndex throws appropriate errors", function() {
+				fail("NotYetImplemented");
+			});
+
+		});//findindex
+
+		describe("REDUCE", function() {
+
+			it("provides _arrayReduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides arrayReduce as reduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _structReduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides structReduce as reduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _queryReduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides queryReduce as reduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _listReduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides listReduce as reduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides a curried version of reduce", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("reduce takes objects", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("reduce throws appropriate errors", function() {
+				fail("NotYetImplemented");
+			});
+
+		});//reduce
+
+		describe("REDUCERIGHT", function() {
+			
+			it("provides _arrayReduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides arrayReduceRight as reduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _structReduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides structReduceRight as reduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _queryReduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides queryReduceRight as reduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides _listReduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides listReduceRight as reduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("provides a curried version of reduceRight", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("reduceRight takes objects", function() {
+				fail("NotYetImplemented");
+			});
+
+			it("reduceRight throws appropriate errors", function() {
+				fail("NotYetImplemented");
+			});
+			
+		});//reduceright
 
 		describe("MISC", function() {
 
