@@ -1717,6 +1717,21 @@ component extends="testbox.system.BaseSpec" {
 				expect(x["baz"]).toBeStruct().toHaveLength(2).toBe({a:3, b:"baz"});
 			});
 
+			it("provides identity", function() {
+				expect(fp.identity(1)).toBe(1);
+				expect(fp.identity("1")).toBe("1");
+				expect(fp.identity("foobar")).toBe("foobar");
+				expect(fp.identity([])).toBe([]);
+				expect(fp.identity({a:1})).toBe({a:1});
+				expect(fp.identity(javacast("null", 0))).toBeNull();
+				expect(fp.identity(fp.noOp)).toBe(fp.noOp);
+			});
+
+			it("provides noOp", function() {
+				expect(fp.noOp()).toBeNull();
+				expect(fp.isCallable(fp.noOp)).toBeTrue();
+			});
+
 		});//misc
 
 

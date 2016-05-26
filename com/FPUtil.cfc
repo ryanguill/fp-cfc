@@ -786,6 +786,9 @@ component {
 	}
 
 	function identity (x) {
+		if (isNull(x)) {
+			return javacast("null", 0);
+		}
 		return x;
 	}
 
