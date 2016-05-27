@@ -2600,6 +2600,82 @@ component extends="testbox.system.BaseSpec" {
 				expect(head).toBe(0);
 			});
 
+			it("provides _arrayTail", function() {
+				var data = [1,2,3];
+				var tail = fp._arrayTail(data);
+				expect(isNull(tail)).toBeFalse();
+				expect(tail).toBe([2,3]);
+
+				tail = fp._arrayTail([]);
+				expect(tail).toBeEmpty();
+
+				tail = fp._arrayTail([1]);
+				expect(tail).toBeEmpty();
+			});
+
+			it("provides _queryTail", function() {
+				var tail = fp._queryTail(qThreeRows);
+				expect(isNull(tail)).toBeFalse();
+				expect(tail).toBe(queryNew("a,b", "integer,varchar", [{a:2, b:"bar"}, {a:3, b:"baz"}]));
+
+				tail = fp._queryTail(qNoRows);
+				expect(tail).toBe(qNoRows);
+
+				tail = fp._queryTail(qOneRow);
+				expect(tail).toBe(qNoRows);
+			});
+
+			it("provides _listTail", function() {
+				var data = "1,2,3";
+				var tail = fp._listTail(data);
+				expect(isNull(tail)).toBeFalse();
+				expect(tail).toBe("2,3");
+
+				tail = fp._listTail("");
+				expect(tail).toBeEmpty();
+
+				tail = fp._listTail("1");
+				expect(tail).toBeEmpty();
+			});
+
+			it("provides arrayTail through tail", function() {
+				var data = [1,2,3];
+				var tail = fp.tail(data);
+				expect(isNull(tail)).toBeFalse();
+				expect(tail).toBe([2,3]);
+
+				tail = fp.tail([]);
+				expect(tail).toBeArray().toBeEmpty();
+
+				tail = fp.tail([1]);
+				expect(tail).toBeArray().toBeEmpty();
+			});
+
+			it("provides queryTail through tail", function() {
+				var tail = fp.tail(qThreeRows);
+				expect(isNull(tail)).toBeFalse();
+				expect(tail).toBe(queryNew("a,b", "integer,varchar", [{a:2, b:"bar"}, {a:3, b:"baz"}]));
+
+				tail = fp.tail(qNoRows);
+				expect(tail).toBe(qNoRows);
+
+				tail = fp.tail(qOneRow);
+				expect(tail).toBe(qNoRows);
+			});
+
+			it("provides listTail through tail", function() {
+				var data = "1,2,3";
+				var tail = fp.tail(data);
+				expect(isNull(tail)).toBeFalse();
+				expect(tail).toBe("2,3");
+
+				tail = fp.tail("");
+				expect(tail).toBeEmpty();
+
+				tail = fp.tail("1");
+				expect(tail).toBeEmpty();
+			});
+
 			it("provides defaults()", function() {
 				var f = function() {
 					//no return;

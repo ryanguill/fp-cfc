@@ -794,6 +794,48 @@ component {
 	}
 
 	//tail
+	
+	
+	function _arrayTail (required array data) {
+		var dataLen = arrayLen(data);
+		if (dataLen > 1) {
+			return arraySlice(data, 2, dataLen-1);
+		}
+		return [];
+	}
+
+	function _queryTailToArray (required query data) {
+		var dataLen = data.recordCount;
+		var dataArray = _queryMapToArray(data, function(row) { return row; });
+		return _arrayTail(dataArray);
+	}
+
+	function _queryTail (required query data) {
+		return queryFunctionHelper(data, '', _queryTailToArray);
+	}
+
+	function _listTail (required string data, string delimiter = ",", boolean includeEmptyFields = false) {
+		var dataArray = _arrayTail(listToArray(data, delimiter, includeEmptyFields));
+		return arrayToList(dataArray, delimiter);
+	}
+
+	function tail (required any data) {
+		if (isArray(data)) {
+			return _arrayTail(data);
+		} else if (isQuery(data)) {
+			return _queryTail(data);
+		} else if (isSimpleValue(data)) {
+			return _listTail(data);
+		} else if (isObject(data)) {
+			if (structKeyExists(data, "tail")) {
+				return data.tail();
+			} else {
+				throw("this object does not provide a `tail` method");
+			}
+		} else {
+			throw("Invalid data type for `tail` - please provide one of the following [array,struct,query,list or object that defines a tail method]");
+		}
+	}
 
 	//last
 
