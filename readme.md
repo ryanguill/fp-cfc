@@ -1,11 +1,7 @@
 
 # fp.cfc
 
-## Dependencies
-None :)
-
-## Intended Support
-Adobe ColdFusion 10+, Lucee 4.5+
+The goal of this project is to provide many of the higher order functions from newer versions of CFML back to CF 10 (which I happen to still be using), but to also provide different versions of those functions and some new ones as well.  Think lodash or ramda for CMFL.  No dependencies. Adobe ColdFusion 10+, Lucee 4.5+
 
 ## How to run the tests
 
