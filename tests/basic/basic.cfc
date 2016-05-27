@@ -7,7 +7,7 @@ component extends="testbox.system.BaseSpec" {
 
 
 	function beforeAll () {
-		variables.fp = new com.FPUtil();
+		variables.fp = new com.fp();
 	}
 
 	function afterAll () {

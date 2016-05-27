@@ -1,15 +1,13 @@
 
-# FPUtil
+# fp.cfc
 
 ## Dependencies
+None :)
 
-
-## Support
+## Intended Support
 Adobe ColdFusion 10+, Lucee 4.5+
 
-
 ## Todo:
-
 
 ## How to run the tests
 
@@ -25,6 +23,10 @@ Or, if you use docker / docker-compose, you can use the included docker-compose 
 3. Hit the docker ip address on port 80.
 
 You could swap out the `app` service with lucee or other coldfusion version if you would rather use that.
+
+## Contributions
+
+All contributions welcome! Issues, code, ideas, bug reports, whatever.
 
 ## License
 
