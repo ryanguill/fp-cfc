@@ -7,8 +7,6 @@ None :)
 ## Intended Support
 Adobe ColdFusion 10+, Lucee 4.5+
 
-## Todo:
-
 ## How to run the tests
 
 1. Download testbox from: http://www.ortussolutions.com/products/testbox
