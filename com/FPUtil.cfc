@@ -420,7 +420,7 @@ component {
 		} else {
 			var fx = arguments.f;
 			return function (data) {
-				return find(fx, arguments.data);
+				return variables.find(fx, arguments.data);
 			};
 		}
 	}

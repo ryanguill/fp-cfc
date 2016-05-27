@@ -14,4 +14,7 @@ component {
 	function every () {
 		return "I am every!";
 	}
+	function find () {
+		return "I am find!";
+	}
 }
