@@ -611,35 +611,41 @@ component {
 	function _arrayReduceRight (required array data, required any f, any initialValue) {
 
 		var dataLen = arrayLen(data);
+		var i = dataLen;
 
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
 		} else if (dataLen > 0) {
-			var acc = dataLen[1];
+			var acc = data[dataLen];
+			i--;
 		} else {
-			throw("Reduce of empty collection with no initial value");
+			throw("ReduceRight of empty collection with no initial value");
 		}
 
-		for (var i = dataLen; i >= 1; i--) {
+		for (; i >= 1; i--) {
 			acc = f(acc, data[i], i, data);
 		}
 		return acc;
 	}
 
-
-	function _structReduceRight (required struct data, required any f, required any initialValue) {
+	//note! there are no order guarentees when using this function!
+	function _structReduceRight (required struct data, required any f, any initialValue) {
 
 		//assume that structKeyArray will give us the results in the correct order, its all we can do
 		var keys = structKeyArray(data);
 		var dataLen = arrayLen(keys);
+		var i = dataLen;
 
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
+		} else if (dataLen > 0) {
+			var acc = data[keys[dataLen]];
+			i--;
+		}  else {
+			throw("ReduceRight of empty collection with no initial value");
 		}
 
-
-
-		for (var i = dataLen; i >= 1; i--) {
+		for (; i >= 1; i--) {
 			var key = keys[i];
 			acc = f(acc, key, data[key], data);
 		}
@@ -647,19 +653,21 @@ component {
 	}
 
 	function _queryReduceRight (required query data, required any f, any initialValue) {
+
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
 		} else if (data.recordCount > 0) {
 			var acc = javaCast("null", 0);
 		} else {
-			throw("Reduce of empty collection with no initial value");
+			throw("ReduceRight of empty collection with no initial value");
 		}
 
 		//convert to an array of structs and then iterate backwards
-		var dataArray = _queryMap(data, function(row) {return row;});
+		var dataArray = _queryMapToArray(data, function(row) {return row;});
 		var dataLen = data.recordCount;
+		var i = dataLen;
 
-		for (var i = dataLen; i >= 1; i--) {
+		for (; i >= 1; i--) {
 			acc = f(acc, dataArray[i], i, data);
 		}
 		return acc;
@@ -667,42 +675,40 @@ component {
 
 	function _listReduceRight (required string data, required any f, any initialValue, string delimiter = ",", boolean includeEmptyFields = false) {
 		var dataArray = listToArray(data, delimiter, includeEmptyFields);
-		return arrayToList(_arrayReduceRight(dataArray, f, initialValue), delimiter);
+		if (isNull(initialValue)) {
+			return _arrayReduceRight(dataArray, f);
+		}
+		return _arrayReduceRight(dataArray, f, initialValue);
 	}
 
-	function reduceRight (required any f, any initialValue, any data) {
-		if (!isNull(initialValue)) {
-			if (!isNull(data)) {
-				if (isArray(data)) {
-					return _arrayReduceRight(data, f, initialValue);
-				} else if (isObject(data)) {
-					if (structKeyExists(data, "reduceRight")) {
-						return data.reduceRight(f, initialValue);
-					} else {
-						throw("this object does not provide a `reduceRight` method");
-					}
-				} else if (isStruct(data)) {
-					return _structReduceRight(data, f, initialValue);
-				} else if (isQuery(data)) {
-					return _queryReduceRight(data, f, initialValue);
-				} else if (isSimpleValue(data)) {
-					return _listReduceRight(data, f, initialValue);
+	function reduceRight (required any f, required any initialValue, any data) {
+
+		if (!isNull(data)) {
+			if (isArray(data)) {
+				return _arrayReduceRight(data, f, initialValue);
+			} else if (isObject(data)) {
+				if (structKeyExists(data, "reduceRight")) {
+					return data.reduceRight(f, initialValue);
 				} else {
-					throw("Invalid data type for `reduceRight` - please provide one of the following [array,struct,query,list or object that defines a reduceRight method]");
+					throw("this object does not provide a `reduceRight` method");
 				}
+			} else if (isStruct(data)) {
+				return _structReduceRight(data, f, initialValue);
+			} else if (isQuery(data)) {
+				return _queryReduceRight(data, f, initialValue);
+			} else if (isSimpleValue(data)) {
+				return _listReduceRight(data, f, initialValue);
 			} else {
-				var fx = arguments.f;
-				var iv = arguments.initialValue;
-				return function (data) {
-					return reduceRight(fx, iv, arguments.data);
-				};
+				throw("Invalid data type for `reduceRight` - please provide one of the following [array,struct,query,list or object that defines a reduceRight method]");
 			}
 		} else {
 			var fx = arguments.f;
-			return function (any initialValue, data) {
-				return reduceRight(fx, arguments.initialValue, arguments.data);
+			var iv = arguments.initialValue;
+			return function (data) {
+				return reduceRight(fx, iv, arguments.data);
 			};
 		}
+
 	}
 
 	/*========================================================

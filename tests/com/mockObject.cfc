@@ -23,4 +23,7 @@ component {
 	function reduce () {
 		return "I am reduce!";
 	}
+	function reduceRight () {
+		return "I am reduceRight!";
+	}
 }
