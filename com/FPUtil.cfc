@@ -433,7 +433,7 @@ component {
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
 			if (f(data[i], i, data)) {
-				return data[i];
+				return i;
 			}
 		}
 		return 0;

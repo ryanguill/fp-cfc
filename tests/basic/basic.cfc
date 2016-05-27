@@ -1739,47 +1739,339 @@ component extends="testbox.system.BaseSpec" {
 		describe("FINDINDEX", function() {
 
 			it("provides _arrayFindIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = [1,2,3,4,5];
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp._arrayFindIndex(data, isThree);
+				expect(result).toBe(3);
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var result = fp._arrayFindIndex(data, isSix);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var result = fp._arrayFindIndex([], isSix);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._arrayFindIndex(["a"], argCheck)).toBe(1);
 			});
 
 			it("provides arrayFindIndex as findIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = [1,2,3,4,5];
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isThree, data);
+				expect(result).toBe(3);
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, data);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, []);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.findIndex(argCheck, ["a"])).toBe(1);
 			});
 
 			it("provides _structFindIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var isThree = function(k, v) {
+					loopCounter++;
+					return v == 3;
+				};
+				var isSix = function(k, v) {
+					loopCounter++;
+					return v == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp._structFindIndex(data, isThree);
+				expect(result).toBe("c");
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				var loopCounter = 0;
+				var result = fp._structFindIndex(data, isSix);
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				//empty
+				var loopCounter = 0;
+				var result = fp._structFindIndex({}, isSix);
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp._structFindIndex({a:1}, argCheck)).toBe("a");
 			});
 
 			it("provides structFindIndex as findIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var isThree = function(k, v) {
+					loopCounter++;
+					return v == 3;
+				};
+				var isSix = function(k, v) {
+					loopCounter++;
+					return v == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isThree, data);
+				expect(result).toBe("c");
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, data);
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBeLTE(5); //cant be guaranteed of order
+
+				//empty
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, {});
+				expect(isNull(result)).toBeTrue();
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(key, value, wholeStruct) {
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp.findIndex(argCheck, {a:1})).toBe("a");
 			});
 
 			it("provides _queryFindIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var isThree = function(row) {
+					loopCounter++;
+					return row.a == 3;
+				};
+				var isSix = function(row) {
+					loopCounter++;
+					return row.a == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp._queryFindIndex(qFiveRows, isThree);
+				expect(result).toBe(3);
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var result = fp._queryFindIndex(qFiveRows, isSix);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var result = fp._queryFindIndex(qNoRows, isSix);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp._queryFindIndex(qOneRow, argCheck)).toBe(1);
 			});
 
 			it("provides queryFindIndex as findIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var isThree = function(row) {
+					loopCounter++;
+					return row.a == 3;
+				};
+				var isSix = function(row) {
+					loopCounter++;
+					return row.a == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isThree, qFiveRows);
+				expect(result).toBe(3);
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, qFiveRows);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, qNoRows);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp.findIndex(argCheck, qOneRow)).toBe(1);
 			});
 
 			it("provides _listFindIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = "1,2,3,4,5";
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp._listFindIndex(data, isThree);
+				expect(result).toBe(3);
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var result = fp._listFindIndex(data, isSix);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var result = fp._listFindIndex("", isSix);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._listFindIndex("a", argCheck)).toBe(1);
 			});
 
 			it("provides listFindIndex as findIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var data = "1,2,3,4,5";
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var isSix = function(x) {
+					loopCounter++;
+					return x == 6;
+				};
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isThree, data);
+				expect(result).toBe(3);
+				expect(loopCounter).toBe(3);
+
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, data);
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(5);
+
+				//empty
+				var loopCounter = 0;
+				var result = fp.findIndex(isSix, "");
+				expect(result).toBe(0);
+				expect(loopCounter).toBe(0);
+
+				//argCheck
+				var argCheck = function(value, index, wholeArray) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.findIndex(argCheck, "a")).toBe(1);
 			});
 
 			it("provides a curried version of findIndex", function() {
-				fail("NotYetImplemented");
+				var loopCounter = 0;
+				var isThree = function(x) {
+					loopCounter++;
+					return x == 3;
+				};
+				var findIndexThree = fp.findIndex(isThree);
+				expect(fp.isCallable(findIndexThree)).toBeTrue();
+				expect(findIndexThree([1,2,3,4,5])).toBe(3);
+				expect(loopCounter).toBe(3);
 			});
 
 			it("findIndex takes objects", function() {
-				fail("NotYetImplemented");
+				var mock = new tests.com.mockObject();
+				expect(fp.findIndex(function(){}, mock)).toBe("I am findIndex!");
 			});
 
 			it("findIndex throws appropriate errors", function() {
-				fail("NotYetImplemented");
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.findIndex(function(){}, mock);
+				}).toThrow("", "this object does not provide a `findIndex` method");
 			});
 
 		});//findindex

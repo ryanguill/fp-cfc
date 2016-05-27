@@ -17,4 +17,7 @@ component {
 	function find () {
 		return "I am find!";
 	}
+	function findIndex () {
+		return "I am findIndex!";
+	}
 }
