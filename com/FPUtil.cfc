@@ -501,39 +501,54 @@ component {
 	function _arrayReduce (required array data, required any f, any initialValue) {
 
 		var dataLen = arrayLen(data);
+		var i = 1;
 
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
 		} else if (dataLen > 0) {
-			var acc = dataLen[1];
+			var acc = data[1];
+			i++;
 		} else {
 			throw("Reduce of empty collection with no initial value");
 		}
 
-		for (var i = 1; i <= dataLen; i++) {
+		for (; i <= dataLen; i++) {
 			acc = f(acc, data[i], i, data);
 		}
 		return acc;
 	}
 
+	//note! there are no order guarentees when using this function!
+	function _structReduce (required struct data, required any f, any initialValue) {
 
-	function _structReduce (required struct data, required any f, required any initialValue) {
+		//assume that structKeyArray will give us the results in the correct order, its all we can do
+		var keys = structKeyArray(data);
+		var dataLen = arrayLen(keys);
+		var i = 1;
 
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
+		} else if (dataLen > 0) {
+			var acc = data[keys[1]];
+			i++;
+		}  else {
+			throw("Reduce of empty collection with no initial value");
 		}
 
-		for (var key in data) {
-			acc = f(acc, key, data[key], data);
+		for (; i <= dataLen; i++) {
+			acc = f(acc, keys[i], data[keys[i]], data);
 		}
 		return acc;
 	}
 
 	function _queryReduce (required query data, required any f, any initialValue) {
+
+		var skipFirstRow = false;
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
 		} else if (data.recordCount > 0) {
 			var acc = javaCast("null", 0);
+			var skipFirstRow = true;
 		} else {
 			throw("Reduce of empty collection with no initial value");
 		}
@@ -543,47 +558,46 @@ component {
 			if (isNull(acc)) {
 				acc = row;
 			}
-			acc = f(acc, row, ++i, data);
+			if (i == 1 && skipFirstRow) {
+				continue;
+			}
+			acc = f(acc, row, i, data);
 		}
 		return acc;
 	}
 
 	function _listReduce (required string data, required any f, any initialValue, string delimiter = ",", boolean includeEmptyFields = false) {
 		var dataArray = listToArray(data, delimiter, includeEmptyFields);
-		return arrayToList(_arrayReduce(dataArray, f, initialValue), delimiter);
+		if (isNull(initialValue)) {
+			return _arrayReduce(dataArray, f);
+		}
+		return _arrayReduce(dataArray, f, initialValue);
 	}
 
-	function reduce (required any f, any initialValue, any data) {
-		if (!isNull(initialValue)) {
-			if (!isNull(data)) {
-				if (isArray(data)) {
-					return _arrayReduce(data, f, initialValue);
-				} else if (isObject(data)) {
-					if (structKeyExists(data, "reduce")) {
-						return data.reduce(f, initialValue);
-					} else {
-						throw("this object does not provide a `reduce` method");
-					}
-				} else if (isStruct(data)) {
-					return _structReduce(data, f, initialValue);
-				} else if (isQuery(data)) {
-					return _queryReduce(data, f, initialValue);
-				} else if (isSimpleValue(data)) {
-					return _listReduce(data, f, initialValue);
+	function reduce (required any f, required any initialValue, any data) {
+		if (!isNull(data)) {
+			if (isArray(data)) {
+				return _arrayReduce(data, f, initialValue);
+			} else if (isObject(data)) {
+				if (structKeyExists(data, "reduce")) {
+					return data.reduce(f, initialValue);
 				} else {
-					throw("Invalid data type for `reduce` - please provide one of the following [array,struct,query,list or object that defines a reduce method]");
+					throw("this object does not provide a `reduce` method");
 				}
+			} else if (isStruct(data)) {
+				return _structReduce(data, f, initialValue);
+			} else if (isQuery(data)) {
+				return _queryReduce(data, f, initialValue);
+			} else if (isSimpleValue(data)) {
+				return _listReduce(data, f, initialValue);
 			} else {
-				var fx = arguments.f;
-				var iv = arguments.initialValue;
-				return function (data) {
-					return reduce(fx, iv, arguments.data);
-				};
+				throw("Invalid data type for `reduce` - please provide one of the following [array,struct,query,list or object that defines a reduce method]");
 			}
 		} else {
 			var fx = arguments.f;
-			return function (any initialValue, data) {
-				return reduce(fx, arguments.initialValue, arguments.data);
+			var iv = arguments.initialValue;
+			return function (data) {
+				return reduce(fx, iv, arguments.data);
 			};
 		}
 	}
@@ -615,13 +629,15 @@ component {
 
 	function _structReduceRight (required struct data, required any f, required any initialValue) {
 
+		//assume that structKeyArray will give us the results in the correct order, its all we can do
+		var keys = structKeyArray(data);
+		var dataLen = arrayLen(keys);
+
 		if (!isNull(initialValue)) {
 			var acc = duplicate(initialValue);
 		}
 
-		//asume that structKeyArray will give us the results in the correct order, its all we can do
-		var keys = structKeyArray(data);
-		var dataLen = arrayLen(keys);
+
 
 		for (var i = dataLen; i >= 1; i--) {
 			var key = keys[i];

@@ -2079,47 +2079,219 @@ component extends="testbox.system.BaseSpec" {
 		describe("REDUCE", function() {
 
 			it("provides _arrayReduce", function() {
-				fail("NotYetImplemented");
+				var data = [1,2,3,4,5];
+				var join = function(agg, x) {
+					return agg & x;
+				};
+				expect(fp._arrayReduce(data, join)).toBe("12345");
+
+				//empty
+				expect(fp._arrayReduce([], join, "")).toBe("");
+
+				expect(function(){
+					fp._arrayReduce([], join);
+				}).toThrow("", "Reduce of empty collection with no initial value");
+
+
+				var argCheck = function(acc, value, index, wholeArray) {
+					expect(acc).toBe("initialValue");
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._arrayReduce(["a"], argCheck, "initialValue")).toBeTrue();
 			});
 
 			it("provides arrayReduce as reduce", function() {
-				fail("NotYetImplemented");
+				var data = [1,2,3,4,5];
+				var join = function(agg, x) {
+					return agg & x;
+				};
+				expect(fp.reduce(join, 0, data)).toBe("12345");
+
+				//empty
+				expect(fp.reduce(join, "", [])).toBe("");
+
+				//cant leave off initial value when calling .reduce()
+
+				var argCheck = function(acc, value, index, wholeArray) {
+					expect(acc).toBe("initialValue");
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.reduce(argCheck, "initialValue", ["a"])).toBeTrue();
 			});
 
 			it("provides _structReduce", function() {
-				fail("NotYetImplemented");
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var sumValues = function(agg, k, v) {
+					return agg + v;
+				};
+				expect(lcase(fp._structReduce(data, sumValues, 0))).toBe(15);
+
+				//empty
+				expect(fp._structReduce({}, sumValues, 0)).toBe(0);
+
+				expect(function(){
+					fp._structReduce({}, sumValues);
+				}).toThrow("", "Reduce of empty collection with no initial value");
+
+
+				var argCheck = function(acc, key, value, wholeStruct) {
+					expect(acc).toBe("initialValue");
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp._structReduce({a:1}, argCheck, "initialValue")).toBeTrue();
 			});
 
 			it("provides structReduce as reduce", function() {
-				fail("NotYetImplemented");
+				var data = {a:1, b:2, c:3, d:4, e:5};
+				var sumValues = function(agg, k, v) {
+					return agg + v;
+				};
+				expect(lcase(fp.reduce(sumValues, 0, data))).toBe(15);
+
+				//empty
+				expect(fp.reduce(sumValues, 0, {})).toBe(0);
+
+				//cant leave off initial value when calling .reduce()
+
+				var argCheck = function(acc, key, value, wholeStruct) {
+					expect(acc).toBe("initialValue");
+					expect(key).toBe("a");
+					expect(value).toBe(1);
+					expect(wholeStruct).toBe({a:1});
+					return true;
+				};
+
+				expect(fp.reduce(argCheck, "initialValue", {a:1})).toBeTrue();
 			});
 
 			it("provides _queryReduce", function() {
-				fail("NotYetImplemented");
+				var join = function(agg, row) {
+					return agg & row.b;
+				};
+				expect(fp._queryReduce(qThreeRows, join, "")).toBe("foobarbaz");
+
+				//empty
+				expect(fp._queryReduce(qNoRows, join, "")).toBe("");
+
+				expect(function(){
+					fp._queryReduce(qNoRows, join);
+				}).toThrow("", "Reduce of empty collection with no initial value");
+
+				var argCheck = function(acc, row, index, wholeQuery) {
+					expect(acc).toBe("initialValue");
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp._queryReduce(qOneRow, argCheck, "initialValue")).toBeTrue();
 			});
 
 			it("provides queryReduce as reduce", function() {
-				fail("NotYetImplemented");
+				var join = function(agg, row) {
+					return agg & row.b;
+				};
+				expect(fp.reduce(join, "", qThreeRows)).toBe("foobarbaz");
+
+				//empty
+				expect(fp.reduce(join, "", qNoRows)).toBe("");
+
+				//cant leave off initial value when calling .reduce()
+
+				var argCheck = function(acc, row, index, wholeQuery) {
+					expect(acc).toBe("initialValue");
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return true;
+				};
+
+				expect(fp.reduce(argCheck, "initialValue", qOneRow)).toBeTrue();
 			});
 
 			it("provides _listReduce", function() {
-				fail("NotYetImplemented");
+				var data = "1,2,3,4,5";
+				var join = function(agg, x) {
+					return agg & x;
+				};
+				expect(fp._listReduce(data, join)).toBe("12345");
+
+				//empty
+				expect(fp._listReduce("", join, "")).toBe("");
+
+				expect(function(){
+					fp._listReduce("", join);
+				}).toThrow("", "Reduce of empty collection with no initial value");
+
+
+				var argCheck = function(acc, value, index, wholeArray) {
+					expect(acc).toBe("initialValue");
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp._listReduce("a", argCheck, "initialValue")).toBeTrue();
 			});
 
 			it("provides listReduce as reduce", function() {
-				fail("NotYetImplemented");
+				var data = "1,2,3,4,5";
+				var join = function(agg, x) {
+					return agg & x;
+				};
+				expect(fp.reduce(join, "", data)).toBe("12345");
+
+				//empty
+				expect(fp.reduce(join, "", "")).toBe("");
+
+				//cant leave off initial value when calling .reduce()
+
+				var argCheck = function(acc, value, index, wholeArray) {
+					expect(acc).toBe("initialValue");
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					expect(wholeArray).toBe(["a"]);
+					return true;
+				};
+
+				expect(fp.reduce(argCheck, "initialValue", "a")).toBeTrue();
 			});
 
 			it("provides a curried version of reduce", function() {
-				fail("NotYetImplemented");
+				var join = function(agg, x) {
+					return agg & x;
+				};
+				var concat = fp.reduce(join, "");
+				expect(fp.isCallable(concat)).toBeTrue();
+				expect(concat([1,2,3,4,5])).toBe("12345");
 			});
 
 			it("reduce takes objects", function() {
-				fail("NotYetImplemented");
+				var mock = new tests.com.mockObject();
+				expect(fp.reduce(function(){}, "", mock)).toBe("I am reduce!");
 			});
 
 			it("reduce throws appropriate errors", function() {
-				fail("NotYetImplemented");
+				var mock = new tests.com.emptyMockObject();
+				expect(function() {
+					fp.reduce(function(){}, "", mock);
+				}).toThrow("", "this object does not provide a `reduce` method");
 			});
 
 		});//reduce

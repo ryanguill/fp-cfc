@@ -20,4 +20,7 @@ component {
 	function findIndex () {
 		return "I am findIndex!";
 	}
+	function reduce () {
+		return "I am reduce!";
+	}
 }
