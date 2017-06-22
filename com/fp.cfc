@@ -27,7 +27,7 @@ component {
 		var output = [];
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			arrayAppend(output, f(data[i], i, data));
+			arrayAppend(output, f(data[i], i));
 		}
 		return output;
 	}
@@ -36,7 +36,7 @@ component {
 	function _structMap (required struct data, required any f) {
 		var output = {};
 		for (var key in data) {
-			output[key] = f(key, data[key], data);
+			output[key] = f(key, data[key]);
 		}
 		return output;
 	}
@@ -46,13 +46,13 @@ component {
 		var output = [];
 		var i = 0;
 		for (var row in data) {
-			arrayAppend(output, f(row, ++i, data));
+			arrayAppend(output, f(row, ++i));
 		}
 		return output;
 	}
 
 	function _queryMap (required query data, required any f) {
-		return queryFunctionHelper(data, f, _queryMapToArray);
+		return queryFunctionHelper(data, f);
 	}
 
 	/* takes a callback of f(value, index, list) */
@@ -536,7 +536,9 @@ component {
 		}
 
 		for (; i <= dataLen; i++) {
-			acc = f(acc, keys[i], data[keys[i]], data);
+			//acc = f(acc, keys[i], data[keys[i]], data);
+			//for ACF10 performance, dont pass the whole data into the function
+			acc = f(acc, keys[i], data[keys[i]]);
 		}
 		return acc;
 	}
@@ -794,8 +796,8 @@ component {
 	}
 
 	//tail
-	
-	
+
+
 	function _arrayTail (required array data) {
 		var dataLen = arrayLen(data);
 		if (dataLen > 1) {
@@ -858,6 +860,19 @@ component {
 
 	function noOp () {
 
+	}
+
+	function pluck (required string key, any data) {
+		if (!isNull(data)) {
+			return map(function (item) {
+				return item[key];
+			}, arguments.data);
+		} else {
+			var keyX = arguments.key;
+			return function (required any data) {
+				return pluck(keyX, arguments.data);
+			};
+		}
 	}
 
 }
