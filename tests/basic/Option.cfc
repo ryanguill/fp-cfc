@@ -38,6 +38,133 @@ component extends="testbox.system.BaseSpec" {
 				expectANone(of);
 			});
 
+			it("should be able to respond to isSome/isNone properly", function() {
+				expect(fp.Option().some(1).isSome()).toBe(true);
+				expect(fp.Option().none().isSome()).toBe(false);
+				expect(fp.Option().some(1).isNone()).toBe(false);
+				expect(fp.Option().none().isNone()).toBe(true);
+				expect(fp.Option().of(1).isSome()).toBe(true);
+				expect(fp.Option().of(javacast("null", 0)).isSome()).toBe(false);
+				
+				var fn = function () {
+					//returns void;
+				};
+
+				expect(fp.Option().of(fn()).isSome()).toBe(false);
+			});
+
+			it("unwrap/unwrapOr/unwrapOrElse", function () {
+				var some1 = fp.Option().some(1);
+				expect(some1.unwrap()).toBe(1);
+				expect(some1.unwrapOr(2)).toBe(1);
+				expect(some1.unwrapOrElse(function () {
+					return 3;
+				})).toBe(1);
+
+				var none = fp.Option().none();
+				expect(function() {
+					none.unwrap();
+				}).toThrow("Application", ".*", "Cannot unwrap a none.");
+				expect(none.unwrapOr(2)).toBe(2);
+				expect(none.unwrapOrElse(function () {
+					return 3;
+				})).toBe(3);
+			});
+
+			it("get/getOr/getOrElse", function () {
+				var some1 = fp.Option().some(1);
+				expect(some1.get()).toBe(1);
+				expect(some1.getOr(2)).toBe(1);
+				expect(some1.getOrElse(function () {
+					return 3;
+				})).toBe(1);
+
+				var none = fp.Option().none();
+				expect(function() {
+					none.get();
+				}).toThrow("Application", ".*", "Cannot unwrap a none.");
+				expect(none.getOr(2)).toBe(2);
+				expect(none.getOrElse(function () {
+					return 3;
+				})).toBe(3);
+			});
+
+			it("map", function () {
+				var opt1 = fp.Option().some(1);
+				expect(opt1.map(function (x) {
+					return x * 2;
+				}).unwrap()).toBe(2);
+
+				var opt2 = fp.Option().none();
+				expect(opt2.map(function (x) {
+					return x * 2;
+				}).isNone()).toBeTrue();
+
+				var opt3 = fp.Option().some("foo");
+				expect(opt3.map(function (x) {
+					return ucase(x);
+				}).map(function (x) {
+					// pretend this is a call to some other service, looking up the value and
+					// that service returns null because the value wasnt found
+					if (x == "BAR") {
+						return x;
+					}
+				}).isNone()).toBeTrue();
+			});
+
+			it("filter", function() {
+				var optNumber = fp.Option().some(1);
+				expect(optNumber.isSome()).toBeTrue(); //true
+				expect(optNumber.filter(function (x) {
+					return x % 2 == 0;
+				}).isNone()).toBeTrue(); // None()
+			});
+
+			it("forEach", function() {
+				var opt = fp.Option().some(1);
+
+				var result = [];
+
+				opt.forEach(function (x) {
+					arrayAppend(result, x);
+				});
+
+				expect(result[1]).toBe(1);
+
+				result = [];
+
+				var opt2 = fp.Option().none();
+				opt2.forEach(function (x) {
+					arrayAppend(result, x);
+				});
+
+				expect(arrayLen(result)).toBe(0);
+			});
+
+			it("match", function () {
+				var mySome = fp.Option().some(1);
+				var result = mySome.match({
+					some: function (x) {
+						return x * 2;
+					},
+					none: function () {
+						return 0;
+					}
+				}); // result == 2;
+				expect(result).toBe(2);
+
+				var myNone = fp.Option().none();
+				var result = myNone.match({
+					some: function (x) {
+						return x * 2;
+					},
+					none: function () {
+						return 0;
+					}
+				}); // result == 0;
+				expect(result).toBe(0);
+			});
+
 		});
 	}
 

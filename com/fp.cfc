@@ -965,7 +965,7 @@ component {
 			filter: function (required conditionFn) hint="returns an option" {
 				if (_isSome) {
 					if (conditionFn(_val)) {
-						return m;
+						return Option().some(_val);
 					}
 				}
 				return Option().none();
@@ -975,17 +975,17 @@ component {
 					fn(_val);
 				}
 			},
-			match: function (struct options = {}) hint="pass a struct with two keys with functions for values, `some` and `none`" {
+			match: function (struct matchStruct = {}) hint="pass a struct with two keys with functions for values, `some` and `none`" {
 				if (_isSome) {
-					if (!structKeyExists(options, "some")) {
+					if (!structKeyExists(matchStruct, "some")) {
 						return m.toString();
 					}
-					return options.some(_val);	
+					return matchStruct.some(_val);	
 				} 
-				if (!structKeyExists(options, "none")) {
+				if (!structKeyExists(matchStruct, "none")) {
 					return m.toString();
 				}
-				return options.none();
+				return matchStruct.none();
 			}
 		};
 
@@ -1051,6 +1051,12 @@ component {
 			unwrapOr: function (required other) {
 				if (_isOk) {
 					return _okVal;
+				}
+				return other;
+			},
+			unwrapErrOr: function (required other) {
+				if (!_isOk) {
+					return _errVal;
 				}
 				return other;
 			},
