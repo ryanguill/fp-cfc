@@ -77,16 +77,6 @@ Reduce the collection into another value.
 
 Reduce that goes through the collection in the opposite order.
 
-
-
-#### collection operations not currently provided
-
-These are things that are not currently provided by this library but are things I intend to eventually implement.  If you would like to use these, please feel free to reach out and/or send a PR.
-
-`collect` - Like `map` plus `filter`, if the callback returns void the item is ommitted from the resulting collection.
-
-`flatMap` - If multiple items are returned, result will be flattened.
-
 ## Option
 
 `Option` is useful when you have a variable that may or may not contain a value and you want to a) be able to safely operate on this variable without worrying about if it actually contains a value or not, and b) force the consumer of the variable to handle the case of the value being null.  `Option`s are immutable, no operation on them should change their data.
@@ -246,7 +236,7 @@ success.getErr(); // None()
 success.getErr().isSome(); // false
 success.getErr().unwrapOr("default"); // "default"
 
-var failure = fp.Result().ok("failure!");
+var failure = fp.Result().err("failure!");
 failure.getOk(); // None()
 failure.getOk().isSome(); // true
 failure.getOk().unwrapOr("default"); // "default"
@@ -256,18 +246,71 @@ failure.getErr().isSome(); // true
 failure.getErr().unwrap(); // "failure!"
 ```
 
-The other option is to use `unwrap`, `unwrapErr`.
+The other option is to use `unwrap` or `unwrapErr`.  
 
-//tbd
+```
+var success = fp.Result().ok("success!");
+success.unwrap(); // "success!"
+success.unwrapErr(); // throws -> Called unwrapErr on Result.Ok
+success.unwrapOr("default value"); // "success!"
+success.unwrapOrElse(function (err) {
+    return "Something went wrong: " & err;
+}); // "success!"
+
+var failure = fp.Result().err("failure!");
+failure.unwrap(); // throws -> Called unwrap on a Result.Err
+failure.unwrapErr(); // "failure!"
+failure.unwrapOr("default value"); // "default value"
+failure.unwrapOrElse(function (err) {
+    return "Something went wrong: " & err;
+}); // "Something went wrong: failure!"
+```
 
 You can use `map` and `mapErr` to transform your values without having to worry about if you have a value or not.
 
-//tbd
+```
+var success = fp.Result().ok(1);
+var mappedSuccess = success.map(function (okVal) {
+    return okVal * 2;
+}); // Ok(2)
+
+var failure = fp.Result().err("Error Code: 3");
+var mappedFailure = failure.map(function (okVal) {
+    return okVal * 2;
+}); // Err("Error Code: 3")
+
+var success = fp.Result().ok(1);
+var mappedSuccess = success.mapErr(function (errVal) {
+    return trim(listLast(errVal, ":"));
+}); // Ok(1)
+
+var failure = fp.Result().err("Error Code: 3");
+var mappedFailure = failure.mapErr(function (errVal) {
+    return trim(listLast(errVal, ":"));
+}); // Err("3")
+```
 
 You can use `match` to handle both cases at the same time.
 
-//tbd
+```
+var myResult = fp.Result().ok(1);
+var handledResult = myResult.match({
+    ok: function (okVal) {
+        return "ok";
+    }, errVal: function (errVal) {
+        return "error";
+    }
+}); // "ok"
 
+var myResult = fp.Result().err(1);
+var handledResult = myResult.match({
+    ok: function (okVal) {
+        return "ok";
+    }, errVal: function (errVal) {
+        return "error";
+    }
+}); // "error"
+```
 
 ### Misc functions
 
@@ -281,12 +324,27 @@ You can use `match` to handle both cases at the same time.
 
 `tail(data)` - you can pass an array, query, list or object that implements a `tail` method, will give you all but the first item in the collection.  Returns an empty collection for an empty collection.
 
-`defaults(value, defaultValue)` - if value is null, return the default value.
+`defaults(value, defaultValue)` - if value is null, return the default value.  Note: the value passed as the defaultValue will be evaluated, even if it is not used.
 
 `identity(value)` returns the same value you pass in.
 
 `pluck(key, data)` a shortcut for mapping an array of structs to pull out just a single key. 
 
+
+
+#### methods not currently provided
+
+These are things that are not currently provided by this library but are things I intend to eventually implement.  If you would like to use these, please feel free to reach out and/or send a PR.
+
+`collect` - Like `map` plus `filter`, if the callback returns void the item is ommitted from the resulting collection.
+
+`flatMap` - If multiple items are returned, result will be flattened.
+
+`distinct` - look through a collection and return only distinct items.  (This may be an array only method?)
+
+`last` - like tail, but the last item in a collection.
+
+`nth` - the nth item in a collection
 
 
 ## How to run the tests

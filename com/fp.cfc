@@ -1061,12 +1061,6 @@ component {
 				}
 				return other;
 			},
-			unwrapErrOr: function (required other) {
-				if (!_isOk) {
-					return _errVal;
-				}
-				return other;
-			},
 			unwrapOrElse: function (required fn) {
 				if (_isOk) {
 					return _okVal;
