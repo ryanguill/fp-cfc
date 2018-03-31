@@ -39,7 +39,7 @@ component {
 	function _structMap (required struct data, required any f) {
 		var output = {};
 		for (var key in data) {
-			output[key] = f(key, data[key]);
+			output[key] = f(key, data[key], data);
 		}
 		return output;
 	}
@@ -49,7 +49,7 @@ component {
 		var output = [];
 		var i = 0;
 		for (var row in data) {
-			arrayAppend(output, f(row, ++i));
+			arrayAppend(output, f(row, ++i, data));
 		}
 		return output;
 	}
@@ -100,7 +100,7 @@ component {
 	function _arrayEach (required array data, required any f) {
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			f(data[i], i, data);
+			f(data[i], i);
 		}
 	}
 
@@ -161,7 +161,7 @@ component {
 		var output = [];
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			if (f(data[i], i, data)) {
+			if (f(data[i], i)) {
 				arrayAppend(output, data[i]);
 			}
 		}
@@ -235,7 +235,7 @@ component {
 		var output = [];
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			if (f(data[i], i, data)) {
+			if (f(data[i], i)) {
 				arrayAppend(output, data[i]);
 			} else {
 				break;
@@ -252,7 +252,7 @@ component {
 		var output = [];
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			if (f(data[i], i, data)) {
+			if (f(data[i], i)) {
 				return true;
 			}
 		}
@@ -320,7 +320,7 @@ component {
 		var output = [];
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			if (!f(data[i], i, data)) {
+			if (!f(data[i], i)) {
 				return false;
 			}
 		}
@@ -454,7 +454,7 @@ component {
 	function _arrayFindIndex (required array data, required any f) {
 		var dataLen = arrayLen(data);
 		for (var i = 1; i <= dataLen; i++) {
-			if (f(data[i], i, data)) {
+			if (f(data[i], i)) {
 				return i;
 			}
 		}
@@ -535,7 +535,7 @@ component {
 		}
 
 		for (; i <= dataLen; i++) {
-			acc = f(acc, data[i], i, data);
+			acc = f(acc, data[i], i);
 		}
 		return acc;
 	}
@@ -558,9 +558,7 @@ component {
 		}
 
 		for (; i <= dataLen; i++) {
-			//acc = f(acc, keys[i], data[keys[i]], data);
-			//for ACF10 performance, dont pass the whole data into the function
-			acc = f(acc, keys[i], data[keys[i]]);
+			acc = f(acc, keys[i], data[keys[i]], data);
 		}
 		return acc;
 	}
@@ -647,7 +645,7 @@ component {
 		}
 
 		for (; i >= 1; i--) {
-			acc = f(acc, data[i], i, data);
+			acc = f(acc, data[i], i);
 		}
 		return acc;
 	}
@@ -895,6 +893,206 @@ component {
 				return pluck(keyX, arguments.data);
 			};
 		}
+	}
+
+	function Option () {
+		var NIL = "__NIL__";
+
+		var _isNil = function (input) {
+			return (isNull(input) || (isSimpleValue(input) && input == Nil));
+		};
+
+		var _isSome = false;
+		var _val = NIL;
+
+		var m = {
+			some: function (val) {
+				if (_isNil(val)) {
+					throw("value must be non-null");
+				}
+				_val = arguments.val;
+				_isSome = true;
+				return m;
+			},
+			none: function () {
+				_isSome = false;
+				_val = NIL;
+				return m;
+			},
+			of: function (val) {
+				//gotta love coldfusion, cant pass around null values too far
+				if (isNull(val) || _isNil(val)) {
+					return m.none();
+				}
+				return m.some(arguments.val);
+			},
+			isSome: function () {
+				return _isSome;
+			},
+			isNone: function () {
+				return !_isSome;
+			},
+			toString: function () {
+				if (_isSome) {
+					return 'Some( ' & _val & ' )';
+				}
+				return 'None()';
+			},
+			unwrap: function () {
+				if (_isSome) {
+					return _val;
+				}
+				throw("Cannot unwrap a none.")
+			},
+			unwrapOr: function (required other) {
+				if (_isSome) {
+					return _val;
+				}
+				return other;
+			},
+			unwrapOrElse: function (required fn) {
+				if(_isSome) {
+					return _val;
+				}
+				return fn();
+			},
+			map: function (required fn) hint="returns an option" { 
+				if (_isSome) {
+					return Option().of(fn(_val));
+				}
+				return Option().none();
+			},
+			filter: function (required conditionFn) hint="returns an option" {
+				if (_isSome) {
+					if (conditionFn(_val)) {
+						return m;
+					}
+				}
+				return Option().none();
+			},
+			forEach: function (required fn) hint="for side effects" {
+				if (_isSome) {
+					fn(_val);
+				}
+			},
+			match: function (struct options = {}) hint="pass a struct with two keys with functions for values, `some` and `none`" {
+				if (_isSome) {
+					if (!structKeyExists(options, "some")) {
+						return m.toString();
+					}
+					return options.some(_val);	
+				} 
+				if (!structKeyExists(options, "none")) {
+					return m.toString();
+				}
+				return options.none();
+			}
+		};
+
+		m.get = m.unwrap;
+		m.getOr = m.unwrapOr;
+		m.getOrElse = m.unwrapOrElse;
+		return m;
+    }
+
+	function Result () {
+
+		var _isOk = false;
+		var _okVal = "";
+		var _errVal = "";
+
+		var r = {
+			ok: function (okVal) {
+				_isOk = true;
+				_okVal = okVal;
+				return r;
+			},
+			err: function (errVal) {
+				_isOk = false;
+				_errVal = errVal;
+				return r;
+			},
+			isOk: function () {
+				return _isOk;
+			},
+			isErr: function () {
+				return !_isOk;
+			},
+			toString: function () {
+				if (_isOk) {
+					return "Ok( " & _okVal & " )";
+				}
+				return "Err( " & _errVal & " )";
+			},
+			getOk: function () {
+				if (_isOk) {
+					return Option().some(_okVal);
+				}
+				return Option().none();
+			},
+			getErr: function () {
+				if (!_isOk) {
+					return Option().some(_errVal);
+				}
+				return Option().none();
+			},
+			unwrap: function () {
+				if (_isOk) {
+					return _okVal;
+				}
+				throw("Called unwrap on a Result.Err");
+			},
+			unwrapErr: function () {
+				if (_isOk) {
+					throw("Called unwrapErr on a Result.Ok");
+				}
+				return _errVal;
+			},
+			unwrapOr: function (required other) {
+				if (_isOk) {
+					return _okVal;
+				}
+				return other;
+			},
+			unwrapOrElse: function (required fn) {
+				if (_isOk) {
+					return _okVal;
+				}
+				return fn(_errVal);
+			},
+			map: function (required fn) hint="returns a Result" {
+				/*
+					if isOk, transform the value, otherwise no-op
+				*/
+				if (_isOk) {
+					return Result().ok(fn(_okVal));
+				}
+				return r;
+			},
+			mapErr: function (required fn) hint="returns a Result" {
+				/*
+					if isErr, transform the value, otherwise no-op
+				*/
+				if (_isOk) {
+					return r;
+				}
+				return Result().err(fn(_errVal));
+			},
+			match: function (struct options = {}) hint="pass a struct with two keys with functions for values, `ok` and `err`" {
+				if (_isOk) {
+					if (!structKeyExists(options, "ok")) {
+						return r.toString();
+					}
+					return options.ok(_okVal);
+				}
+				if (!structKeyExists(options, "err")) {
+					return r.toString();
+				}
+				return options.err(_errVal);
+			}
+		};
+
+		return r;
 	}
 
 }

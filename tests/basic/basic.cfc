@@ -52,10 +52,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(result).toBe([], "empty in, empty out");
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return "b";
 				};
 
@@ -75,10 +74,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(result).toBe([], "empty in, empty out");
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return "b";
 				};
 
@@ -198,10 +196,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(result).toBe("", "empty in, empty out");
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return "b";
 				};
 
@@ -221,10 +218,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(result).toBe("", "empty in, empty out");
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return "b";
 				};
 
@@ -275,10 +271,9 @@ component extends="testbox.system.BaseSpec" {
 
 				//arg check
 				loopCounter = 0;
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					loopCounter++;
 				};
 
@@ -304,10 +299,9 @@ component extends="testbox.system.BaseSpec" {
 
 				//arg check
 				loopCounter = 0;
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					loopCounter++;
 				};
 
@@ -447,10 +441,9 @@ component extends="testbox.system.BaseSpec" {
 
 				//arg check
 				loopCounter = 0;
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					loopCounter++;
 				};
 
@@ -476,10 +469,9 @@ component extends="testbox.system.BaseSpec" {
 
 				//arg check
 				loopCounter = 0;
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					loopCounter++;
 				};
 
@@ -529,10 +521,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(fp._arrayFilter([], isOdd)).toBeArray().toHaveLength(0);
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -548,10 +539,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(fp.filter(isOdd, [])).toBeArray().toHaveLength(0);
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -663,10 +653,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(fp._listFilter("", isOdd)).toBeString().toHaveLength(0);
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -682,10 +671,9 @@ component extends="testbox.system.BaseSpec" {
 
 				expect(fp.filter(isOdd, "")).toBeString().toHaveLength(0);
 
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -747,10 +735,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -786,10 +773,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -981,10 +967,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1020,10 +1005,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1087,10 +1071,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1126,10 +1109,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1321,10 +1303,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1360,10 +1341,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1427,10 +1407,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1466,10 +1445,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1661,10 +1639,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1700,10 +1677,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1767,10 +1743,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -1806,10 +1781,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2001,10 +1975,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2040,10 +2013,9 @@ component extends="testbox.system.BaseSpec" {
 				expect(loopCounter).toBe(0);
 
 				//argCheck
-				var argCheck = function(value, index, wholeArray) {
+				var argCheck = function(value, index) {
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2093,11 +2065,10 @@ component extends="testbox.system.BaseSpec" {
 				}).toThrow("", "Reduce of empty collection with no initial value");
 
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2116,11 +2087,10 @@ component extends="testbox.system.BaseSpec" {
 
 				//cant leave off initial value when calling .reduce()
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2239,11 +2209,10 @@ component extends="testbox.system.BaseSpec" {
 				}).toThrow("", "Reduce of empty collection with no initial value");
 
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2262,11 +2231,10 @@ component extends="testbox.system.BaseSpec" {
 
 				//cant leave off initial value when calling .reduce()
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2313,11 +2281,10 @@ component extends="testbox.system.BaseSpec" {
 				}).toThrow("", "ReduceRight of empty collection with no initial value");
 
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2336,11 +2303,10 @@ component extends="testbox.system.BaseSpec" {
 
 				//cant leave off initial value when calling .reduceRight()
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2459,11 +2425,10 @@ component extends="testbox.system.BaseSpec" {
 				}).toThrow("", "ReduceRight of empty collection with no initial value");
 
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
@@ -2482,11 +2447,10 @@ component extends="testbox.system.BaseSpec" {
 
 				//cant leave off initial value when calling .reduceRight()
 
-				var argCheck = function(acc, value, index, wholeArray) {
+				var argCheck = function(acc, value, index) {
 					expect(acc).toBe("initialValue");
 					expect(value).toBe("a");
 					expect(index).toBe(1);
-					expect(wholeArray).toBe(["a"]);
 					return true;
 				};
 
