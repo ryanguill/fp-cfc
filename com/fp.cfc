@@ -13,6 +13,9 @@ component {
 			return column.name;
 		}), ",");
 		var types = arrayToList(_arrayMap(md, function(column) {
+			if (arrayFindNoCase(["text","uuid","json"], column.typeName)) {
+				return "VarChar";
+			}
 			return column.typeName;
 		}), ",");
 		return queryNew(columns, types, output);
@@ -52,7 +55,7 @@ component {
 	}
 
 	function _queryMap (required query data, required any f) {
-		return queryFunctionHelper(data, f);
+		return queryFunctionHelper(data, f, _queryMapToArray);
 	}
 
 	/* takes a callback of f(value, index, list) */
@@ -223,6 +226,25 @@ component {
 	}
 
 	/*========================================================
+	filterUntil
+	========================================================*/
+
+	//start at the beginning and include rows until you hit the first false (which isnt included)
+	//requires input to be ordered
+	function _arrayFilterUntil (required array data, required any f) {
+		var output = [];
+		var dataLen = arrayLen(data);
+		for (var i = 1; i <= dataLen; i++) {
+			if (f(data[i], i, data)) {
+				arrayAppend(output, data[i]);
+			} else {
+				break;
+			}
+		}
+		return output;
+	}
+
+	/*========================================================
 	SOME / ANY
 	========================================================*/
 
@@ -363,10 +385,10 @@ component {
 	========================================================*/
 
 	function _arrayFind (required array data, required any f) {
-		var dataLen = arrayLen(data);
+		var dataLen = arrayLen(arguments.data);
 		for (var i = 1; i <= dataLen; i++) {
-			if (f(data[i], i, data)) {
-				return data[i];
+			if (f(arguments.data[i], i)) {
+				return arguments.data[i];
 			}
 		}
 		return javacast("null", 0);
