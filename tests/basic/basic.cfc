@@ -2700,6 +2700,60 @@ component extends="testbox.system.BaseSpec" {
 				expect(fp.isCallable(fp.noOp)).toBeTrue();
 			});
 
+			it("provides export", function() {
+				var map = fp.__exportMethod(fp, "map");
+
+				/* map an array */
+
+				var data = [1,2,3,4,5];
+				var double = function (x) { return x * 2; };
+				var result = map(double, data);
+
+				expect(result).toBe([2,4,6,8,10]);
+
+				result = map(double, []);
+
+				expect(result).toBe([], "empty in, empty out");
+
+				var argCheck = function(value, index) {
+					expect(value).toBe("a");
+					expect(index).toBe(1);
+					return "b";
+				};
+
+				result = map(argCheck, ["a"]);
+
+				expect(result).toBe(["b"]);
+
+				/* map a query */
+
+				var double = function (row) {
+					row.a *= 2;
+					row.b = row.b & row.b;
+					return row;
+				};
+				var result = map(double, qTwoRows);
+
+				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:2, b:"foofoo"}, {a:4, b:"barbar"}]));
+
+				result = map(double, qNoRows);
+
+				expect(result).toBe(qNoRows, "empty in, empty out");
+
+				var argCheck = function(row, index, wholeQuery) {
+					expect(row).toBeStruct();
+					expect(row).toBe({a:1, b:"foo"});
+					expect(index).toBe(1);
+					expect(wholeQuery).toBeQuery();
+					return row;
+				};
+
+				result = map(argCheck, qOneRow);
+
+				expect(result).toBe(queryNew("a,b", "integer,varchar", [{a:1, b:"foo"}]));	
+
+			});
+
 		});//misc
 
 

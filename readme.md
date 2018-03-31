@@ -89,19 +89,19 @@ These are things that are not currently provided by this library but are things 
 
 ## Option
 
-Option is useful when you have a variable that may or may not contain a value and you want to a) be able to safely operate on this variable without worrying about if it actually contains a value or not, and b) force the consumer of the variable to handle the case of the value being null.
+`Option` is useful when you have a variable that may or may not contain a value and you want to a) be able to safely operate on this variable without worrying about if it actually contains a value or not, and b) force the consumer of the variable to handle the case of the value being null.  `Option`s are immutable, no operation on them should change their data.
 
 The terminology used here is `some` and `none`, the variable is a `some` if it contains a value, it is a `none` if it does not contain a value.
 
-You have three ways to create an Option, think of it as three different constructors. 
+You have three ways to create an `Option`, think of it as three different constructors. 
 
-`var mySome = fp.Option().some(1)` - this will create an option that is a `some` containing the value `1`.
+`var mySome = fp.Option().some(1)` - this will create an `Option` that is a `some` containing the value `1`.
 
-`var myNone = fp.Option().none()` - this will create an option that is a `none`.
+`var myNone = fp.Option().none()` - this will create an `Option` that is a `none`.
 
 `var myOption = fp.Option().of(value)` - if `value` is null, this will create a `none`, otherwise this will create a `some` with its `value`.
 
-You can use the functions `isSome()` and `isNone()` to test if your option has a value or not.
+You can use the functions `isSome()` and `isNone()` to test if your `Option` has a value or not.
 
 ```
 fp.Option().some(1).isSome(); //true
@@ -115,7 +115,7 @@ fp.Option().of(function () {
 }).isSome(); //false
 ```
 
-To get the value out of your option you can use the functions `unwrap()`, `unwrapOr(defaultValue)` and `unwrapOrElse(fn)`.  Be careful with `unwrap()`, you need to test first to make sure you have a `some`, if it is a `none` it will throw an error.
+To get the value out of your `Option` you can use the functions `unwrap()`, `unwrapOr(defaultValue)` and `unwrapOrElse(fn)`.  Be careful with `unwrap()`, you need to test first to make sure you have a `some`, if it is a `none` it will throw an error.
 
 ```
 var some1 = fp.Option().some(1);
@@ -135,7 +135,7 @@ none.unwrapOrElse(function () {
 
 For Option, `unwrap`, `unwrapOr` and `unwrapOrElse` have aliases of `get`, `getOr` and `getOrElse` respectively.
 
-If you want to operate on your value without worrying if you have a value or not, you can use `map`.  It returns an Option, so you can keep chaining map calls.  If any of your map calls return null or void, the option will change into a `none`, but that will be safe to do.
+If you want to operate on your value without worrying if you have a value or not, you can use `map`.  It returns an `Option`, so you can keep chaining map calls.  If any of your map calls return null or void, the `Option` will change into a `none`, but that will be safe to do.
 
 ```
 var opt1 = fp.Option().some(1);
@@ -160,7 +160,7 @@ opt3.map(function (x) {
 }); // None()
 ```
 
-You can use `filter` to transform your Option into a `none` if it doesn't meet a condition.
+You can use `filter` to transform your `Option` into a `none` if it doesn't meet a condition.
 
 ```
 var optNumber = fp.Option().some(1);
@@ -184,7 +184,7 @@ opt2.forEach(function (x) {
 }); // no output, function was not called.
 ```
 
-If you want to handle both cases and return a value depending on the value your Option contains, you can use `match`.  
+If you want to handle both cases and return a value depending on the value your `Option` contains, you can use `match`.  
 
 ```
 var mySome = fp.Option().some(1);
@@ -212,17 +212,17 @@ var result = myNone.match({
 
 ## Result
 
-If you have an operation that might succeed or fail, and you a) need a type that both represents the success or failure but also might contain the value of either the result or the error message, `Result` is a good fit.
+If you have an operation that might succeed or fail, and you a) need a type that both represents the success or failure but also might contain the value of either the result or the error message, `Result` is a good fit. `Result`s are immutable, no operations on them should change the data they contain.
 
 The terminology used here is `Ok` and `Err`, the variable is an `Ok` if the result represents a success, it is an `Err` if the result represents a failure.  Both can contain data.
 
-You have two ways to create an Result.
+You have two ways to create a `Result`.
 
 `var myOk = fp.Result().Ok("my success value"); // Ok`
 
 `var myErr = fp.Result().Err("my error message"); // Err`
 
-You can use the functions `isOk()` and `isErr()` to figure out what kind of Result you have.
+You can use the functions `isOk()` and `isErr()` to figure out what kind of `Result` you have.
 
 ```
 var myResult = fp.Result().Ok(1);
@@ -234,7 +234,7 @@ myOtherResult.isOk(); //false
 myOtherResult.isErr(); //true
 ```
 
-To get the values out of your Result, you have a few different ways to go about it.  First is `getOk()` and `getErr()`.  These return `Option`s of values, depending on if your Result is an `Ok` or `Err`.
+To get the values out of your `Result`, you have a few different ways to go about it.  First is `getOk()` and `getErr()`.  These return `Option`s of values, depending on if your `Result` is an `Ok` or `Err`.
 
 ```
 var success = fp.Result().ok("success!");

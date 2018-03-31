@@ -27,6 +27,16 @@ component extends="testbox.system.BaseSpec" {
 				var err = fp.Result().err(2);
 				expectAnErr(err, 2);
 			});
+			
+			it("should be able to to export Result", function() {
+				var Result = fp.__exportMethod(fp, "Result");
+				
+				var ok = Result().ok(3);
+				expectAnOk(ok, 3);
+
+				var err = Result().err(4);
+				expectAnErr(err, 4);
+			});
 		});
 	}
 

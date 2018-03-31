@@ -895,6 +895,13 @@ component {
 		}
 	}
 
+	/* experimental, im not certain there are no edge cases with this method yet */
+	function __exportMethod (required any receiver, required string method) {
+		return function () {
+			return invoke(receiver, method, arguments);
+		};
+	}
+
 	function Option () {
 		var NIL = "__NIL__";
 
