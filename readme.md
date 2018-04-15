@@ -324,7 +324,7 @@ var handledResult = myResult.match({
 
 `tail(data)` - you can pass an array, query, list or object that implements a `tail` method, will give you all but the first item in the collection.  Returns an empty collection for an empty collection.
 
-`defaults(value, defaultValue)` - if value is null, return the default value.  Note: the value passed as the defaultValue will be evaluated, even if it is not used.
+`defaults(value, defaultValue)` - if value is null, return the default value.  Note: the value passed as the defaultValue will be evaluated, even if it is not used.  If you dont want that to happen, you can wrap your call in an anonymous function which will only be evaluated if necessary.  `defaults(value, function() { return someCallYouOnlyWantToHappenIfNecessary(); })`;
 
 `identity(value)` returns the same value you pass in.
 

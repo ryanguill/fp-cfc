@@ -896,8 +896,12 @@ component {
 	}
 
 	//NOTE! the value passed to defaultValue will be evaluated, even if the default is not used!
+	//use an anonymous function to wrap the call if you dont want this to happen.
 	function defaults (any value, any defaultValue) {
 		if (isNull(value)) {
+			if (this.isCallable(defaultValue)) {
+				return defaultValue();
+			}
 			return defaultValue;
 		}
 		return value;

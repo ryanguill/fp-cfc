@@ -2649,6 +2649,31 @@ component extends="testbox.system.BaseSpec" {
 				expect(fp.defaults(1, 0)).toBe(1);
 			});
 
+			it("provides defaults() which accepts a function for the default value", function() {
+				var f = function() {
+					//no return;
+				};
+				var wasCalled = false;
+				var spy = function() {
+					wasCalled = true;
+					return true;
+				};
+
+				expect(wasCalled).toBe(false, "wasCalled should be false before the test");
+				expect(fp.defaults(javacast("null", 0), function() {
+					return spy();
+				})).toBe(true, "the function should be called because the first argument to default was empty");
+				expect(wasCalled).toBe(true, "the function should have been called because the first argument to default was empty");
+
+				wasCalled = false;
+				expect(wasCalled).toBe(false, "wasCalled should be false before the test");
+				expect(fp.defaults(false, function() {
+					return spy();
+				})).toBe(false, "the function should not be called because the first argument to default was not empty");
+				expect(wasCalled).toBe(false, "the function should not have been called because the first argument to default was not empty");
+
+			});
+
 			it("provides times", function() {
 				var loopCount = 0;
 				var sum = 0;
