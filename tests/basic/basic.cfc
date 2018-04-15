@@ -2640,6 +2640,90 @@ component extends="testbox.system.BaseSpec" {
 				expect(tail).toBeEmpty();
 			});
 
+
+			it("provides _arrayLast", function() {
+				var data = [1,2,3];
+				var last = fp._arrayLast(data);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(3);
+
+				last = fp._arrayLast([]);
+				expect(isNull(last)).toBeTrue();
+
+				last = fp.defaults(fp._arrayLast([]), 0);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(0);
+			});
+
+			it("provides _queryLast", function() {
+				var last = fp._queryLast(qThreeRows);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe({a:3, b:"baz"});
+
+				last = fp._queryLast(qNoRows);
+				expect(isNull(last)).toBeTrue();
+
+				last = fp.defaults(fp._queryLast(qNoRows), 0);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(0);
+			});
+
+			it("provides _listLast", function() {
+				var data = "1,2,3";
+				var last = fp._listLast(data);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(3);
+
+				last = fp._listLast("");
+				expect(isNull(last)).toBeTrue();
+
+				last = fp.defaults(fp._listLast(""), 0);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(0);
+			});
+
+			it("provides arrayLast through last", function() {
+				var data = [1,2,3];
+				var last = fp.last(data);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(3);
+
+				last = fp.last([]);
+				expect(isNull(last)).toBeTrue();
+
+				last = fp.defaults(fp.last([]), 0);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(0);
+			});
+
+			it("provides queryLast through last", function() {
+				var last = fp.last(qThreeRows);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe({a:3, b:"baz"});
+
+				last = fp.last(qNoRows);
+				expect(isNull(last)).toBeTrue();
+
+				last = fp.defaults(fp.last(qNoRows), 0);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(0);
+			});
+
+			it("provides listLast through last", function() {
+				var data = "1,2,3";
+				var last = fp.last(data);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(3);
+
+				last = fp.last("");
+				expect(isNull(last)).toBeTrue();
+
+				last = fp.defaults(fp.last(""), 0);
+				expect(isNull(last)).toBeFalse();
+				expect(last).toBe(0);
+			});
+
+
 			it("provides defaults()", function() {
 				var f = function() {
 					//no return;

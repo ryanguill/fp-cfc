@@ -811,12 +811,11 @@ component {
 				throw("this object does not provide a `head` method");
 			}
 		} else {
-			throw("Invalid data type for `head` - please provide one of the following [array,struct,query,list or object that defines a head method]");
+			throw("Invalid data type for `head` - please provide one of the following [array,query,list or object that defines a head method]");
 		}
 	}
 
 	//tail
-
 
 	function _arrayTail (required array data) {
 		var dataLen = arrayLen(data);
@@ -855,11 +854,53 @@ component {
 				throw("this object does not provide a `tail` method");
 			}
 		} else {
-			throw("Invalid data type for `tail` - please provide one of the following [array,struct,query,list or object that defines a tail method]");
+			throw("Invalid data type for `tail` - please provide one of the following [array,query,list or object that defines a tail method]");
 		}
 	}
 
 	//last
+
+	function _arrayLast (required array data) {
+		if (arrayLen(data)) {
+			return data[arrayLen(data)];
+		}
+		return javacast("null", 0);
+	}
+
+	function _queryLast (required query data) {
+		if (data.recordCount) {
+			var idx = 0;
+			for (var row in data) {
+				idx += 1;
+				if (idx < data.recordCount) {
+					continue;
+				}
+				return row; //only the last record
+			}
+		}
+	}
+
+	function _listLast (required string data, string delimiter = ",", boolean includeEmptyFields = false) {
+		return _arrayLast(listToArray(data, delimiter, includeEmptyFields));
+	}
+
+	function last (required any data) {
+		if (isArray(data)) {
+			return _arrayLast(data);
+		} else if (isQuery(data)) {
+			return _queryLast(data);
+		} else if (isSimpleValue(data)) {
+			return _listLast(data);
+		} else if (isObject(data)) {
+			if (structKeyExists(data, "head")) {
+				return data.last();
+			} else {
+				throw("this object does not provide a `last` method");
+			}
+		} else {
+			throw("Invalid data type for `last` - please provide one of the following [array,query,list or object that defines a head method]");
+		}
+	}
 
 	//nth
 
