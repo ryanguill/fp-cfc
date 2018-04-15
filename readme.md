@@ -77,6 +77,10 @@ Reduce the collection into another value.
 
 Reduce that goes through the collection in the opposite order.
 
+**GroupBy** `fp.groupBy(column [,data])`
+
+Take a query or array of structs and group by a certain column - output will be a struct with the key as the value of the grouped by column and the value will be an array of rows that match that key.
+
 ## Option
 
 `Option` is useful when you have a variable that may or may not contain a value and you want to a) be able to safely operate on this variable without worrying about if it actually contains a value or not, and b) force the consumer of the variable to handle the case of the value being null.  `Option`s are immutable, no operation on them should change their data.
@@ -336,15 +340,11 @@ var handledResult = myResult.match({
 
 These are things that are not currently provided by this library but are things I intend to eventually implement.  If you would like to use these, please feel free to reach out and/or send a PR.
 
-`collect` - Like `map` plus `filter`, if the callback returns void the item is ommitted from the resulting collection.
+`collect` - Like `map` plus `filter`, if the callback returns void the item is omitted from the resulting collection.
 
 `flatMap` - If multiple items are returned, result will be flattened.
 
 `distinct` - look through a collection and return only distinct items.  (This may be an array only method?)
-
-`last` - like tail, but the last item in a collection.
-
-`nth` - the nth item in a collection
 
 
 ## How to run the tests

@@ -984,6 +984,35 @@ component {
 	    return setRef.toArray();
 	}
 
+	function groupBy (required string column, required any data) {
+		if (!isNull(arguments.data)) {
+
+			if (!isQuery(arguments.data) && !isArray(arguments.data)) {
+				throw("data must either be a query or array of structs");
+			}
+
+			if (isNull(arguments.data)) {
+				return function (data) {
+					return groupBy(column, arguments.data);
+				};
+			}
+			return this.reduce(function (agg, row) {
+				var key = row[column];
+				if (isNull(agg[key])) {
+					agg[key] = [];
+				}
+				arrayAppend(agg[key], row);
+				return agg;
+			}, {}, data);
+		} else {
+			return function (required any data) {
+				var xColumn = arguments.column;
+				return this.groupBy(xColumn, arguments.data);
+			};
+		}
+	}
+
+
 	//NOTE! the value passed to defaultValue will be evaluated, even if the default is not used!
 	//use an anonymous function to wrap the call if you dont want this to happen.
 	function defaults (any value, any defaultValue) {

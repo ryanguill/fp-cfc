@@ -2992,6 +2992,68 @@ component extends="testbox.system.BaseSpec" {
 				expect(arrayFindNoCase(output, "d")).toBe(0);
 			});
 
+			it("provides groupBy", function () {
+				var qInput = queryNew("a,b,c", "Integer,Varchar,Varchar", [
+					{a: 1, b: "a", c: "foo"}
+					, {a: 2, b: "b", c: "foo"}
+					, {a: 3, b: "b", c: "foo"}
+					, {a: 4, b: "c", c: "bar"}
+					, {a: 5, b: "c", c: "bar"}
+					, {a: 6, b: "c", c: "baz"}
+				]);
+
+				var arInput = [
+					{a: 1, b: "a", c: "foo"}
+					, {a: 2, b: "b", c: "foo"}
+					, {a: 3, b: "b", c: "foo"}
+					, {a: 4, b: "c", c: "bar"}
+					, {a: 5, b: "c", c: "bar"}
+					, {a: 6, b: "c", c: "baz"}
+				];
+
+				expect(fp.groupBy("b", arInput)).toBe({
+				  "b": [
+					{
+					  "b": "b",
+					  "a": 2,
+					  "c": "foo"
+					},
+					{
+					  "b": "b",
+					  "a": 3,
+					  "c": "foo"
+					}
+				  ],
+				  "a": [
+					{
+					  "b": "a",
+					  "a": 1,
+					  "c": "foo"
+					}
+				  ],
+				  "c": [
+					{
+					  "b": "c",
+					  "a": 4,
+					  "c": "bar"
+					},
+					{
+					  "b": "c",
+					  "a": 5,
+					  "c": "bar"
+					},
+					{
+					  "b": "c",
+					  "a": 6,
+					  "c": "baz"
+					}
+				  ]
+				});
+
+			});
+
+
+
 		});//misc
 
 
