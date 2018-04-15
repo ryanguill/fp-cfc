@@ -148,7 +148,7 @@ component {
 		} else {
 			var fx = arguments.f;
 			return function (data) {
-				return each(fx, arguments.data);
+				return this.each(fx, arguments.data);
 			};
 		}
 	}
@@ -862,6 +862,38 @@ component {
 	//last
 
 	//nth
+
+
+	function arrayIntersection (array arrays) {
+	    var arraysLen = arrayLen(arrays);
+	    if ( arraysLen == 0 ){
+	        return [];
+	    } else if ( arraysLen == 1) {
+	        return arrays[1];
+	    }
+
+	    //if any of the arrays are empty, the result will be nil
+	    for (var a = 1; a <= arraysLen; a++){
+	        if ( arrayLen(arrays[a]) == 0 ){
+	            return [];
+	        }
+	    }
+
+		var ensureIsCollection = function (ar) {
+			if (isInstanceOf(arrays[1], "java.util.Collection")) {
+				return ar;
+			}
+			return createObject("java", "java.util.Arrays").asList(ar);
+		};
+
+		var setRef = createObject("java", "java.util.HashSet").init(ensureIsCollection(arrays[1]));
+
+	    for (var a = 2; a <= arraysLen; a++) {
+	        setRef.retainAll(ensureIsCollection(arrays[a]));
+	    }
+
+	    return setRef.toArray();
+	}
 
 	//NOTE! the value passed to defaultValue will be evaluated, even if the default is not used!
 	function defaults (any value, any defaultValue) {

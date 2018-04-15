@@ -2754,6 +2754,44 @@ component extends="testbox.system.BaseSpec" {
 
 			});
 
+			it("provides arrayIntersection", function () {
+				var input = [
+					[1,2,3],
+					[2,3,4]
+				];
+
+				var output = fp.arrayIntersection(input);
+
+				expect(arrayFindNoCase(output, 2)).notToBe(0);
+				expect(arrayFindNoCase(output, 3)).notToBe(0);
+
+				input = [
+					[1,2,3],
+					[2,3,4],
+					[3,4,5]
+				];
+
+				output = fp.arrayIntersection(input);
+
+				expect(arrayFindNoCase(output, 2)).toBe(0);
+				expect(arrayFindNoCase(output, 3)).notToBe(0);
+
+
+			});
+
+			it("provides arrayIntersection that works with simple java arrays", function () {
+				var input = [
+					javaCast( "String[]", [ "a","b","c" ] ),
+					javaCast( "String[]", [ "c","d","e" ] )
+				];
+
+				var output = fp.arrayIntersection(input);
+
+				expect(arrayFindNoCase(output, "c")).notToBe(0);
+				expect(arrayFindNoCase(output, "a")).toBe(0);
+				expect(arrayFindNoCase(output, "d")).toBe(0);
+			});
+
 		});//misc
 
 

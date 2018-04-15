@@ -3,6 +3,7 @@ component skip="true" {
 
 	this.mappings["/lib"] = expandPath("../../lib");
 	this.mappings["/com"] = expandPath("../../com");
+	this.mappings["/testbox"] = expandPath("../../testbox");
 
 	variables.system = createObject("java", "java.lang.System");
 
