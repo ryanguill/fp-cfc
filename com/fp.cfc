@@ -892,7 +892,7 @@ component {
 		} else if (isSimpleValue(data)) {
 			return _listLast(data);
 		} else if (isObject(data)) {
-			if (structKeyExists(data, "head")) {
+			if (structKeyExists(data, "last")) {
 				return data.last();
 			} else {
 				throw("this object does not provide a `last` method");
@@ -903,6 +903,54 @@ component {
 	}
 
 	//nth
+	function _arrayNth (required array data, required numeric n) {
+		if (arrayLen(data) >= n) {
+			return data[n];
+		}
+		return javacast("null", 0);
+	}
+
+	function _queryNth (required query data, required numeric n) {
+		if (data.recordCount >= n) {
+			var idx = 0;
+			for (var row in data) {
+				idx += 1;
+				if (idx < n) {
+					continue;
+				}
+				return row;
+			}
+		}
+	}
+
+	function _listNth (required string data, required numeric n, string delimiter = ",", boolean includeEmptyFields = false) {
+		return _arrayNth(listToArray(data, delimiter, includeEmptyFields), n);
+	}
+
+	function nth (required numeric n, any data) {
+		if (!isNull(data)) {
+			if (isArray(data)) {
+				return _arrayNth(data, n);
+			} else if (isQuery(data)) {
+				return _queryNth(data, n);
+			} else if (isSimpleValue(data)) {
+				return _listNth(data, n);
+			} else if (isObject(data)) {
+				if (structKeyExists(data, "nth")) {
+					return data.nth(n);
+				} else {
+					throw("this object does not provide a `nth` method");
+				}
+			} else {
+				throw("Invalid data type for `nth` - please provide one of the following [array,query,list or object that defines a head method]");
+			}
+		} else {
+			var nx = arguments.n;
+			return function (data) {
+				return nth(nx, arguments.data);
+			};
+		}
+	}
 
 
 	function arrayIntersection (array arrays) {

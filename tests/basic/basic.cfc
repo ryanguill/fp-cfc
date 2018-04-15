@@ -2723,6 +2723,97 @@ component extends="testbox.system.BaseSpec" {
 				expect(last).toBe(0);
 			});
 
+			//nth
+			it("provides _arrayNth", function() {
+				var data = [1,2,3];
+				var nth = fp._arrayNth(data, 2);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(2);
+
+				nth = fp._arrayNth([], 2);
+				expect(isNull(nth)).toBeTrue();
+
+				nth = fp.defaults(fp._arrayNth([], 2), 0);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(0);
+			});
+
+			it("provides _queryNth", function() {
+				var nth = fp._queryNth(qThreeRows, 2);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe({a:2, b:"bar"});
+
+				nth = fp._queryNth(qNoRows, 2);
+				expect(isNull(nth)).toBeTrue();
+
+				nth = fp.defaults(fp._queryNth(qNoRows, 2), 0);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(0);
+			});
+
+			it("provides _listNth", function() {
+				var data = "1,2,3";
+				var nth = fp._listNth(data, 2);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(2);
+
+				nth = fp._listNth("", 2);
+				expect(isNull(nth)).toBeTrue();
+
+				nth = fp.defaults(fp._listNth("", 2), 0);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(0);
+			});
+
+			it("provides arrayNth through nth", function() {
+				var data = [1,2,3];
+				var nth = fp.nth(2, data);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(2);
+
+				nth = fp.nth(2, []);
+				expect(isNull(nth)).toBeTrue();
+
+				nth = fp.defaults(fp.nth(2, []), 0);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(0);
+			});
+
+			it("provides queryNth through nth", function() {
+				var nth = fp.nth(2, qThreeRows);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe({a:2, b:"bar"});
+
+				nth = fp.nth(2, qNoRows);
+				expect(isNull(nth)).toBeTrue();
+
+				nth = fp.defaults(fp.nth(2, qNoRows), 0);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(0);
+			});
+
+			it("provides listNth through nth", function() {
+				var data = "1,2,3";
+				var nth = fp.nth(2, data);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(2);
+
+				nth = fp.nth(2, "");
+				expect(isNull(nth)).toBeTrue();
+
+				nth = fp.defaults(fp.nth(2, ""), 0);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(0);
+			});
+
+			it("provides a curried version of nth", function() {
+
+				var data = "1,2,3";
+				var fnNth = fp.nth(2);
+				var nth = fnNth(data);
+				expect(isNull(nth)).toBeFalse();
+				expect(nth).toBe(2);
+			});
 
 			it("provides defaults()", function() {
 				var f = function() {
