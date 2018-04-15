@@ -1,0 +1,12 @@
+{
+    "app":{
+        "cfengine":"lucee@5"
+    },
+    "name":"lucee5",
+    "web":{
+        "http":{
+            "port":"8090"
+        }
+    },
+    "openBrowser":false
+}

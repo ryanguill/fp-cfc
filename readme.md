@@ -362,6 +362,22 @@ Or, if you use docker / docker-compose, you can use the included docker-compose 
 
 You could swap out the `app` service with lucee or other coldfusion version if you would rather use that.
 
+Or, if you use coldbox, you can use `box server start` to test on lucee 5 and then hit `http://localhost:8090`
+
+For other versions to test with, use:
+
+`box server start lucee5` which runs on  `http://localhost:8090`
+
+`box server start lucee45` which runs on  `http://localhost:8091`
+
+`box server start acf10` which runs on  `http://localhost:8092`
+
+`box server start acf11` which runs on  `http://localhost:8093`
+
+`box server start acf2016` which runs on  `http://localhost:8094`
+
+To stop, use `box server stop [name]` wich whichever name you used, and you can use `box server list` to see all servers you have.
+
 ## Contributions
 
 All contributions welcome! Issues, code, ideas, bug reports, whatever.

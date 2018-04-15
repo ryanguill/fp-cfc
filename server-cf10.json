@@ -1,0 +1,12 @@
+{
+    "app":{
+        "cfengine":"adobe@10"
+    },
+    "name":"cf10",
+    "web":{
+        "http":{
+            "port":"8092"
+        }
+    },
+    "openBrowser": false
+}
