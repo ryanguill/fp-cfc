@@ -558,7 +558,9 @@ component {
 		}
 
 		for (; i <= dataLen; i++) {
-			acc = f(acc, keys[i], data[keys[i]], data);
+			//acc = f(acc, keys[i], data[keys[i]], data);
+			//for ACF10 performance, dont pass the whole data into the function
+			acc = f(acc, keys[i], data[keys[i]]);
 		}
 		return acc;
 	}
@@ -775,6 +777,34 @@ component {
 		return output;
 	}
 
+	function queryToArray (required query data) {
+		var output = [];
+		for (var row in data) {
+			var newRow = {};
+			for (var key in row) {
+				//because of uuids
+				newRow[lcase(key)] = row[key].toString();
+			}
+			arrayAppend(output, newRow);
+		}
+		return output;
+	}
+
+	function queryGetRow (required query data, numeric rowNumber = 1) {
+		if (data.recordCount < rowNumber || rowNumber < 1) {
+			throw(message="Invalid Row Number for Query: rowNumber " & rowNumber & " is out of bounds for recordcount: " & data.recordCount);
+		}
+
+		var ii = 0;
+		for (var row in data) {
+			if (++ii < rowNumber) {
+				continue;
+			}
+			return row;
+		}
+	}
+
+
 	//head
 
 	function _arrayHead (required array data) {
@@ -969,7 +999,7 @@ component {
 	    }
 
 		var ensureIsCollection = function (ar) {
-			if (isInstanceOf(arrays[1], "java.util.Collection")) {
+			if (isInstanceOf(ar, "java.util.Collection")) {
 				return ar;
 			}
 			return createObject("java", "java.util.Arrays").asList(ar);
@@ -998,7 +1028,7 @@ component {
 			}
 			return this.reduce(function (agg, row) {
 				var key = row[column];
-				if (isNull(agg[key])) {
+				if (!structKeyExists(agg, key)) {
 					agg[key] = [];
 				}
 				arrayAppend(agg[key], row);
@@ -1010,6 +1040,36 @@ component {
 				return this.groupBy(xColumn, arguments.data);
 			};
 		}
+	}
+
+	//this function creates x number of chunks with however many cells inside, use chunkGroups
+	function chunk (required numeric chunks, required array data) {
+		var output = [];
+		var chunkIndex = 0;
+		var length = arrayLen(data);
+		if (chunks == 0) {
+			var maxPerChunk = 0;
+		} else {
+			var maxPerChunk = ceiling(length / chunks);
+		}
+		for (chunkIndex = 1; chunkIndex <= chunks; chunkIndex += 1) {
+			var start = 1 + ((chunkIndex - 1) * maxPerChunk);
+			var end = min((length - start)+1, maxPerChunk);
+			if (end == 0) {
+				break;
+			}
+			arrayAppend(output, arraySlice(data, start, end));
+		}
+		return output;
+	}
+
+
+	function chunkGroups (required numeric groupSize, required array data) {
+		var output = [];
+		var length = arrayLen(data);
+
+		var chunks = ceiling(length / groupSize);
+		return chunk(chunks, data);
 	}
 
 
@@ -1095,7 +1155,7 @@ component {
 			},
 			toString: function () {
 				if (_isSome) {
-					return 'Some( ' & _val & ' )';
+					return 'Some( ' & serializeJSON(_val) & ' )';
 				}
 				return 'None()';
 			},
@@ -1103,7 +1163,7 @@ component {
 				if (_isSome) {
 					return _val;
 				}
-				throw("Cannot unwrap a none.")
+				throw("Cannot unwrap a none.");
 			},
 			unwrapOr: function (required other) {
 				if (_isSome) {
@@ -1181,9 +1241,9 @@ component {
 			},
 			toString: function () {
 				if (_isOk) {
-					return "Ok( " & _okVal & " )";
+					return "Ok( " & serializeJSON(_okVal) & " )";
 				}
-				return "Err( " & _errVal & " )";
+				return "Err( " & serializeJSON(_errVal) & " )";
 			},
 			getOk: function () {
 				if (_isOk) {
@@ -1255,5 +1315,86 @@ component {
 
 		return r;
 	}
+
+	function combinations (input, k) {
+        var result = [];
+        var sub = [];
+        for (var index = 1; index <= arrayLen(input); index++) {
+            if (k == 1) {
+                arrayAppend(result, [input[index]]);
+            } else {
+                if (arrayLen(input) != index) {
+                    sub = combinations(arraySlice(input, index+1, arrayLen(input)-index), k-1);
+                    for (var subIndex = 1; subIndex <= arrayLen(sub); subIndex += 1) {
+                        var next = sub[subIndex];
+                        arrayPrepend(next, input[index]);
+                        arrayAppend(result, next);
+                    }
+                }
+
+            }
+        }
+        return result;
+    }
+
+	// takes either a comma delim list of keys or array of keys.
+    function safe_struct_get (required struct input, required any key_list, any default_value = "") {
+		if (isSimpleValue(key_list)) {
+			key_list = listToArray(key_list);
+		}
+
+		for (var key in key_list) {
+			if (isStruct(input) && structKeyExists(input, key)) {
+				input = input[key];
+			} else {
+				return default_value;
+			}
+		}
+		return input;
+    }
+
+    function struct_nestedkey_set (required struct source, required any key_list, any value, string if_missing = "CREATE") {
+		if (isSimpleValue(key_list)) {
+			key_list = listToArray(key_list);
+		}
+
+		var current_node = source;
+		var visited_key_list = [];
+
+		for (var key_index = 1; key_index <= arrayLen(key_list); key_index += 1) {
+			var key = key_list[key_index];
+
+			arrayAppend(visited_key_list, key);
+			if (structKeyExists(current_node, key)) {
+				if (key_index == arrayLen(key_list)) {
+					//we are setting the value
+					current_node[key] = value;
+					break;
+				} else {
+					//we are drilling down
+					current_node = current_node[key];
+					continue;
+				}
+			} else {
+				if (if_missing == "CREATE") {
+					if (key_index == arrayLen(key_list)) {
+						current_node[key] = value;
+						break;
+					} else {
+						current_node[key] = {};
+						current_node = current_node[key];
+						continue;
+					}
+				} else if (if_missing == "IGNORE") {
+					return source;
+				} else {
+					//otherwise throw
+					throw(message="Invalid Key: #arrayToList(visited_key_list, ".")#");
+				}
+			}
+		}
+
+		return source;
+    }
 
 }

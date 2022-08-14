@@ -376,7 +376,7 @@ For other versions to test with, use:
 
 `box server start acf2016` which runs on  `http://localhost:8094`
 
-To stop, use `box server stop [name]` wich whichever name you used, and you can use `box server list` to see all servers you have.
+To stop, use `box server stop [name]` with whichever name you used, and you can use `box server list` to see all servers you have.
 
 ## Contributions
 
